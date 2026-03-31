@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.springbootdemo.mapper.UserMapper">
+    <!--定义查询全部
+    id 为方法名
+    resultType 一条记录封装成什么类型的对象
+    -->
+    <select id="getUserList" resultType="UserVO">
+        SELECT id, name, money, status, role_id FROM user
+    </select>
+
+    <select id="getUserById" resultType="UserVO">
+        SELECT id, name, money, status, role_id FROM user WHERE id = #{id}
+    </select>
+
+    <insert id="insertUser" parameterType="UserDTO">
+        INSERT INTO user (id, name, money, password)
+        VALUES (#{id}, #{name}, #{money}, #{password})
+    </insert>
+
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+
+    <update id="updateUser" parameterType="UserVO">
+        UPDATE user SET name = #{name}, money = #{money}, status = #{status}, role_id = #{role_id} WHERE id = #{id}
+    </update>
+
+    <select id="getPassword" parameterType="int" resultType="String">
+        SELECT password FROM user WHERE id = #{id}
+    </select>
+</mapper>
