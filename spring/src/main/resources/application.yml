@@ -2,8 +2,8 @@ server:
   port: 8080
   address: 0.0.0.0
 jwt:
-  secret: mySecretKey12345678901234567890
-  expiration: 86400000  # 24小时，单位毫秒
+  secret: mySecretKey123456789012345678901234567890
+  expiration: 86400000
 
 
 spring:

@@ -71,7 +71,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import { loginApi} from "@/api/LoginApi.js";
 
 const router = useRouter()
 const loginFormRef = ref(null)
@@ -93,13 +93,6 @@ const loginRules = {
   ]
 }
 
-// 创建 axios 实例
-const api = axios.create({
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
 
 // 登录方法
 const handleLogin = async () => {
@@ -109,20 +102,19 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    const response = await api.post('/login', {
-      id: loginForm.id,
-      password: loginForm.password
-    })
+    const response = await loginApi({ id: loginForm.id, password: loginForm.password })
 
-    if (response.data.code === 200) {
+
+
+
+    if (response.code === 200) {
       ElMessage.success('登录成功')
-      // 存储用户信息到 sessionStorage
-      localStorage.setItem('user', JSON.stringify(response.data.data.userVo))
-      // 存储 token 到 sessionStorage
-      localStorage.setItem('token', response.data.data.token)
+      // 存储用户信息
+      localStorage.setItem('user', JSON.stringify(response.data.user))
+      localStorage.setItem('token', JSON.stringify(response.data.token))
       router.push('/dashboard')
     } else {
-      ElMessage.error(response.data.message || '登录失败')
+      ElMessage.error(response.message || '登录失败')
     }
   } catch (error) {
     console.error('登录错误:', error)

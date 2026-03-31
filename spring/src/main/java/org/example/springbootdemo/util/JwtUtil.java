@@ -1,6 +1,5 @@
 package org.example.springbootdemo.util;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,23 +18,19 @@ import java.util.Map;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String secret;  // 密钥
+    private String secret;
 
     @Value("${jwt.expiration}")
-    private Long expiration;  // 过期时间（毫秒）
+    private Long expiration;
 
-    // 生成 Token
-    public static String generateToken(UserVO uservo) {
+    public String generateToken(UserVO uservo) {
         Map<String, Object> claims = new HashMap<>();
-
-        // 封装用户数据到 claims
         claims.put("userId", uservo.getId());
         claims.put("roleId", uservo.getRole_id());
 
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
 
-        // 生成 JWT
         return Jwts.builder()
                 .claims(claims)
                 .subject(String.valueOf(uservo.getId()))
@@ -45,7 +40,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // 解析 Token 获取用户数据
     public UserVO getUserFromToken(String token) {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());

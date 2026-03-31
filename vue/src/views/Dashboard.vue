@@ -115,6 +115,7 @@ const handleCommand = (command) => {
   if (command === 'logout') {
     // 清除所有登录状态
     localStorage.removeItem('user')
+    localStorage.removeItem('token')
     sessionStorage.clear()
 
     ElMessage.success('退出登录成功')

@@ -13,12 +13,14 @@ import org.example.springbootdemo.util.JwtUtil;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtUtil jwtUtil;
     @PostMapping("/login")
-    public ApiResult<LoginResponse> login(@RequestBody UserDTO userDTO){
+    public ApiResult<LoginResponse> login(UserDTO userDTO){
 
         if(userService.checkPassword(userDTO.getId(),userDTO.getPassword())){
             UserVO userVO = userService.getUserById(userDTO.getId());
-            String token = JwtUtil.generateToken(userVO);
+            String token = jwtUtil.generateToken(userVO);
             LoginResponse loginResponse = new LoginResponse(userVO,token);
             return ApiResult.success(loginResponse);
         }else{
@@ -26,7 +28,7 @@ public class UserController {
         }
     }
     @PostMapping("/register")
-    public ApiResult<UserVO> register(@RequestBody UserDTO userDTO){
+    public ApiResult<UserVO> register(UserDTO userDTO){
         int result = userService.addUser(userDTO);
         if (result>0) {
             return ApiResult.success();

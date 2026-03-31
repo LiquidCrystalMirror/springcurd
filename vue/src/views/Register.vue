@@ -99,7 +99,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import axios from "axios";
+import { registerApi} from "@/api/RegisterApi.js";
 
 const router = useRouter()
 const registerFormRef = ref(null)
@@ -170,22 +170,23 @@ const handleRegister = async () => {
 
     console.log('发送注册数据:', submitData)
 
-    const response = await axios.post('/register', submitData, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    const response = await registerApi({
+      id: submitData.id,
+      name: submitData.name,
+      password: submitData.password,
+      money: submitData.money
     })
 
     console.log('注册响应:', response.data)
 
-    if (response.data.code === 200) {
+    if (response.code === 200) {
       ElMessage.success('注册成功，请登录')
       // 延迟跳转，让用户看到成功消息
       setTimeout(() => {
         router.push('/login')
       }, 1000)
     } else {
-      ElMessage.error(response.data.message || '注册失败')
+      ElMessage.error(response.message || '注册失败')
     }
   } catch (error) {
     console.error('注册错误:', error)
@@ -194,7 +195,7 @@ const handleRegister = async () => {
       // 服务器返回错误
       console.log('错误状态码:', error.response.status)
       console.log('错误数据:', error.response.data)
-      ElMessage.error(error.response.data?.message || `请求失败: ${error.response.status}`)
+      ElMessage.error(error.response?.message || `请求失败: ${error.response.status}`)
     } else if (error.request) {
       // 请求已发送但无响应
       console.log('请求对象:', error.request)
