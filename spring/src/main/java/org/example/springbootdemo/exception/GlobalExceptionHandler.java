@@ -82,4 +82,19 @@ public class GlobalExceptionHandler {
         e.printStackTrace(); // 打印日志方便调试
         return ApiResult.error(500, "服务器内部错误：" + e.getMessage());
     }
+
+    /**
+     * 处理认证授权异常
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ApiResult<Void> handleRuntimeException(RuntimeException e) {
+        String message = e.getMessage();
+        // 判断是否是认证相关错误
+        if (message.contains("认证") || message.contains("Token")) {
+            return ApiResult.error(401, message);
+        }
+        // 其他运行时异常按 500 处理
+        e.printStackTrace();
+        return ApiResult.error(500, "服务器内部错误：" + message);
+    }
 }

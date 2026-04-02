@@ -6,6 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="9b006ce6-2592-4a26-9466-b61ece38613e" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/JwtUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/UserVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/UserVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/request/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/request/request.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/service/AuthService.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/service/AuthService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/user/ListView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/user/ListView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/vite.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +73,7 @@
     "javascript.nodejs.core.library.typings.version": "24.12.0",
     "jdk.selected.JAVA_MODULE": "17",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Administrator/.m2/repository/org/projectlombok/lombok/1.18.44/lombok-1.18.44.jar",
+    "last_opened_file_path": "E:/实训/我的源码/springBootDemo/vue/src/views/user",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -80,6 +95,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\实训\我的源码\springBootDemo\vue\src\views\user" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\实训\我的源码\springBootDemo\vue\src\views\dept" />
       <recent name="E:\实训\我的源码\springBootDemo\vue\src\views\user" />
@@ -158,6 +176,9 @@
       <workItem from="1774854189207" duration="4381000" />
       <workItem from="1774921254752" duration="6550000" />
       <workItem from="1774937970144" duration="9347000" />
+      <workItem from="1775008023031" duration="7169000" />
+      <workItem from="1775023821735" duration="5088000" />
+      <workItem from="1775028929295" duration="4441000" />
     </task>
     <servers />
   </component>

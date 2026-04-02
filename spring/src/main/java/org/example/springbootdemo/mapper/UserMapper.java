@@ -2,6 +2,7 @@ package org.example.springbootdemo.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.example.springbootdemo.dto.UserDTO;
+import org.example.springbootdemo.query.UserQuery;
 import org.example.springbootdemo.vo.UserVO;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface UserMapper {
     int updateUser(UserVO userVO);
     int deleteUser(int id);
     String getPassword(int id);
+    List<UserVO> find(UserQuery userQuery);
 }

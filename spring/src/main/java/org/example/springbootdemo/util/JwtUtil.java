@@ -52,7 +52,7 @@ public class JwtUtil {
 
         UserVO user = new UserVO();
         user.setId(claims.get("userId", Integer.class));
-        user.setRole_id(claims.get("roleId", Integer.class));
+        user.setRole_id(claims.get("roleId", Byte.class));
 
         return user;
     }

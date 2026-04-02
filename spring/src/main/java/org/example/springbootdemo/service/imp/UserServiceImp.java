@@ -1,8 +1,12 @@
 package org.example.springbootdemo.service.imp;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.Data;
 import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.mapper.UserMapper;
+import org.example.springbootdemo.query.UserQuery;
 import org.example.springbootdemo.service.UserService;
 import org.example.springbootdemo.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +49,14 @@ public class UserServiceImp implements UserService {
     public boolean checkPassword(int id, String password) {
         String pwd = userMapper.getPassword(id);
         return pwd.equals(password);
+    }
+    @Override
+    public PageInfo<UserVO> find(UserQuery userQuery) {
+        PageHelper.startPage(userQuery.getPage(),userQuery.getPageSize());
+        Page<UserVO> list = (Page<UserVO>)userMapper.find(userQuery);
+
+
+        PageInfo<UserVO> pageInfo =  list.toPageInfo();
+        return pageInfo;
     }
 }

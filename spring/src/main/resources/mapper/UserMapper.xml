@@ -32,4 +32,16 @@
     <select id="getPassword" parameterType="int" resultType="String">
         SELECT password FROM user WHERE id = #{id}
     </select>
+
+    <select id="find" resultType="UserVO" parameterType="UserQuery">
+        select id,name,status from user
+        <where>
+            <if test="name != null and name !=''"> and name like '%#{name}%' </if>
+            <if test="status != null and status.length > 0">
+                and status in
+                <foreach item="item" collection="status" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+        </where>
+    </select>
+
 </mapper>
