@@ -21,6 +21,18 @@
         </el-form-item>
       </el-col>
       <el-col :span="6">
+        <el-form-item label="角色">
+          <el-select v-model="searchForm.roleId" placeholder="请选择角色" clearable multiple>
+            <template v-for="item in roleOptions" :key="item.value">
+              <el-option
+                  :label="item.label"
+                  :value="item.value"
+              />
+            </template>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="6">
         <el-form-item>
           <el-button type="primary" @click="findUser">
             <el-icon><Search /></el-icon>
@@ -43,7 +55,11 @@
 
   <el-table :data="tableData" stripe   border style="width: 100%">
     <el-table-column prop="name" label="姓名" width="180" />
-    <el-table-column prop="money" label="余额" width="180" />
+    <el-table-column prop="roleId" label="角色">
+      <template #default="scope">
+        {{ getRoleText(scope.row.roleId) }}
+      </template>
+    </el-table-column>
     <el-table-column prop="status" label="状态">
       <template #default="scope">
         {{ getStatusText(scope.row.status) }}
@@ -51,7 +67,7 @@
     </el-table-column>
 
 
-    <el-table-column label="操作">
+    <el-table-column label="操作" v-if="isAdmin">
       <template #default="scope">
         <el-button size="small" @click="handleEdit(scope.row)" :disabled="scope.row.status===DISABLED">
           编辑
@@ -86,14 +102,22 @@
       <el-form-item label="姓名" prop="name">
         <el-input placeholder="请输入姓名" v-model="userForm.name" :readonly="!!userForm.id"/>
       </el-form-item>
-      <el-form-item label="余额" prop="money">
-        <el-input-number placeholder="请输入余额" v-model="userForm.money" :precision="0" :min="0"/>
-      </el-form-item>
 
       <!--修改的时候可以编辑状态-->
       <el-form-item label="状态" prop="status" v-if="userForm.id">
         <el-select v-model="userForm.status" placeholder="请选择状态">
           <template v-for="item in statusOptions" :key="item.value">
+            <el-option
+                :label="item.label"
+                :value="item.value"
+            />
+          </template>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="角色" prop="roleId" v-if="userForm.id">
+        <el-select v-model="userForm.roleId" placeholder="请选择角色">
+          <template v-for="item in roleOptions" :key="item.value">
             <el-option
                 :label="item.label"
                 :value="item.value"
@@ -121,14 +145,14 @@ import * as userAPI from "@/api/UserApi.js";
 import {ElMessage} from "element-plus";
 import { Search, Refresh, Plus } from '@element-plus/icons-vue';
 import UserStatus, { getStatusText, getStatusOptions } from "@/enum/user/UserStatus.js";
+import Role,{getRoleOptions, getRoleText} from "@/enum/user/Role.js";
+import authService from "@/service/AuthService.js";
 
 
 
 const searchForm = ref({
   name: '',
   status: [],
-
-
   page: 1,
   pageSize: 2,
 });
@@ -139,7 +163,9 @@ const tableData = ref([]);
 let dialogVisible = ref(false);
 let userForm = ref({
   name: '',
-  money: 0
+  status: UserStatus.ENABLED,
+  roleId: Role.Administrator
+
 });
 let userFormRef = ref(null);
 let userFormRules = ref({
@@ -148,6 +174,15 @@ let userFormRules = ref({
 
 // 状态选项
 const statusOptions = computed(() => getStatusOptions());
+
+// 角色选项
+const roleOptions = computed(() => getRoleOptions());
+
+// 判断当前用户是否为管理员
+const isAdmin = computed(() => {
+  const user = authService.getUser();
+  return user && user.roleId === Role.Administrator;
+});
 
 // 获取状态文本（直接使用导入的函数）
 
@@ -159,14 +194,12 @@ const DISABLED = UserStatus.DISABLED;
 const handleReset=()=>{
   searchForm.value = {
     name: '',
-    status: []
+    status: [],
+    roleId: []
   };
 
   findUser();
 };
-
-
-
 
 const findUser=()=>{
   userAPI.findUser(searchForm.value).then((resp)=>{
@@ -193,8 +226,8 @@ const handleAdd=()=>{
 
   userForm.value = {
     name: '',
-    money: 0,
     status: UserStatus.ENABLED,
+    roleId: Role.Administrator
   };
 }
 
@@ -217,7 +250,8 @@ const handleSave=()=>{
       userAPI.addUser(userForm.value).then((resp)=>{
         userForm.value = {
           name: '',
-          money: 0
+          status: UserStatus.ENABLED,
+          roleId: Role.Administrator
         };
         findUser();
       })

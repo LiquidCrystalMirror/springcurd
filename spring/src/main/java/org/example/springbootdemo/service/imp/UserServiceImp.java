@@ -3,6 +3,7 @@ package org.example.springbootdemo.service.imp;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import jakarta.annotation.Resource;
 import lombok.Data;
 import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.mapper.UserMapper;
@@ -11,15 +12,17 @@ import org.example.springbootdemo.service.UserService;
 import org.example.springbootdemo.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.example.springbootdemo.util.PasswordUtil;
 
 import java.util.List;
 
 @Service
 @Data
 public class UserServiceImp implements UserService {
-    @Autowired
+    @Resource
     private UserMapper userMapper;
+    @Resource
+    private PasswordUtil passwordUtil;
     @Override
     public List<UserVO> getUserList() {
         return userMapper.getUserList();
@@ -36,8 +39,8 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public int updateUser(UserVO userVO) {
-        return userMapper.updateUser(userVO);
+    public int updateUser(UserDTO userDTO) {
+        return userMapper.updateUser(userDTO);
     }
 
     @Override
@@ -48,14 +51,12 @@ public class UserServiceImp implements UserService {
     @Override
     public boolean checkPassword(int id, String password) {
         String pwd = userMapper.getPassword(id);
-        return pwd.equals(password);
+        return passwordUtil.verifyPassword(password, pwd);
     }
     @Override
     public PageInfo<UserVO> find(UserQuery userQuery) {
         PageHelper.startPage(userQuery.getPage(),userQuery.getPageSize());
         Page<UserVO> list = (Page<UserVO>)userMapper.find(userQuery);
-
-
         PageInfo<UserVO> pageInfo =  list.toPageInfo();
         return pageInfo;
     }

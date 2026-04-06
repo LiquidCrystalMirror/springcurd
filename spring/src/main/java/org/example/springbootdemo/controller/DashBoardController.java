@@ -2,6 +2,7 @@ package org.example.springbootdemo.controller;
 
 import com.github.pagehelper.PageInfo;
 import org.example.springbootdemo.dto.ApiResult;
+import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.query.UserQuery;
 import org.example.springbootdemo.service.UserService;
 import org.example.springbootdemo.vo.UserVO;
@@ -19,5 +20,14 @@ public class DashBoardController {
     public ApiResult<PageInfo<UserVO>> getUsers(UserQuery userQuery){
         PageInfo<UserVO> pageInfo = userService.find(userQuery);
         return ApiResult.success(pageInfo);
+    }
+    @PostMapping("/updateUsers")
+    public ApiResult<Void> updateUsers(UserDTO userDTO){
+        int result = userService.updateUser(userDTO);
+        if (result>0) {
+            return ApiResult.success();
+        }else {
+            return ApiResult.error(500,"更新失败");
+        }
     }
 }

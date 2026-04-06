@@ -75,26 +75,38 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理所有其他异常
-     */
-    @ExceptionHandler(Exception.class)
-    public ApiResult<Void> handleException(Exception e) {
-        e.printStackTrace(); // 打印日志方便调试
-        return ApiResult.error(500, "服务器内部错误：" + e.getMessage());
-    }
-
-    /**
-     * 处理认证授权异常
+     * 处理认证授权异常（Token 无效、未登录）
      */
     @ExceptionHandler(RuntimeException.class)
     public ApiResult<Void> handleRuntimeException(RuntimeException e) {
         String message = e.getMessage();
+        
         // 判断是否是认证相关错误
+        if (message.contains("未登录") || message.contains("登录已过期")) {
+            return ApiResult.error(401, message);
+        }
+        
+        // 判断是否是权限相关错误
+        if (message.contains("权限不足")) {
+            return ApiResult.error(403, message);
+        }
+        
+        // 判断是否是 Token 相关错误
         if (message.contains("认证") || message.contains("Token")) {
             return ApiResult.error(401, message);
         }
+        
         // 其他运行时异常按 500 处理
         e.printStackTrace();
         return ApiResult.error(500, "服务器内部错误：" + message);
+    }
+
+    /**
+     * 处理所有其他异常
+     */
+    @ExceptionHandler(Exception.class)
+    public ApiResult<Void> handleException(Exception e) {
+        e.printStackTrace();
+        return ApiResult.error(500, "服务器内部错误：" + e.getMessage());
     }
 }

@@ -12,7 +12,7 @@ public interface UserMapper {
     List<UserVO> getUserList();
     UserVO getUserById(int id);
     int insertUser(UserDTO userDTO);
-    int updateUser(UserVO userVO);
+    int updateUser(UserDTO userVO);
     int deleteUser(int id);
     String getPassword(int id);
     List<UserVO> find(UserQuery userQuery);

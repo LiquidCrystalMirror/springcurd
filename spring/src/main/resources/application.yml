@@ -1,11 +1,9 @@
 server:
   port: 8080
   address: 0.0.0.0
-jwt:
-  secret: mySecretKey123456789012345678901234567890
-  expiration: 86400000
+
 
 
 spring:
   config:
-    import: classpath:application-mapper.yml
+    import: classpath:application-mapper.yml,application-springdoc.yml,application-data.yml

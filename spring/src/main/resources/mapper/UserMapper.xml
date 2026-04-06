@@ -9,24 +9,24 @@
     resultType 一条记录封装成什么类型的对象
     -->
     <select id="getUserList" resultType="UserVO">
-        SELECT id, name, money, status, role_id FROM user
+        SELECT id, name, status, role_id FROM user
     </select>
 
     <select id="getUserById" resultType="UserVO">
-        SELECT id, name, money, status, role_id FROM user WHERE id = #{id}
+        SELECT id, name, status, role_id FROM user WHERE id = #{id}
     </select>
 
     <insert id="insertUser" parameterType="UserDTO">
-        INSERT INTO user (id, name, money, password)
-        VALUES (#{id}, #{name}, #{money}, #{password})
+        INSERT INTO user (id, name, password)
+        VALUES (#{id}, #{name}, #{password})
     </insert>
 
     <delete id="deleteUser" parameterType="int">
         DELETE FROM user WHERE id = #{id}
     </delete>
 
-    <update id="updateUser" parameterType="UserVO">
-        UPDATE user SET name = #{name}, money = #{money}, status = #{status}, role_id = #{role_id} WHERE id = #{id}
+    <update id="updateUser" parameterType="UserDTO">
+        UPDATE user SET name = #{name}, status = #{status}, role_id = #{roleId} WHERE id = #{id}
     </update>
 
     <select id="getPassword" parameterType="int" resultType="String">
@@ -34,12 +34,16 @@
     </select>
 
     <select id="find" resultType="UserVO" parameterType="UserQuery">
-        select id,name,status from user
+        select id,name,status,role_id from user
         <where>
             <if test="name != null and name !=''"> and name like '%#{name}%' </if>
             <if test="status != null and status.length > 0">
                 and status in
                 <foreach item="item" collection="status" open="(" separator="," close=")"> #{item} </foreach>
+            </if>
+            <if test="roleId != null and roleId.length > 0">
+                and role_id in
+                <foreach item="item" collection="roleId" open="(" separator="," close=")"> #{item} </foreach>
             </if>
         </where>
     </select>

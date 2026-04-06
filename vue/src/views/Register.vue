@@ -54,17 +54,6 @@
               clearable
           />
         </el-form-item>
-
-        <el-form-item label="金额" prop="money">
-          <el-input
-              v-model="registerForm.money"
-              type="number"
-              placeholder="请输入金额"
-              prefix-icon="Money"
-              clearable
-          />
-        </el-form-item>
-
         <el-form-item>
           <el-button
               type="primary"
@@ -111,7 +100,6 @@ const registerForm = reactive({
   name: '',
   password: '',
   confirmPassword: '',
-  money: 0
 })
 
 // 修改：使用函数形式的验证规则
@@ -141,10 +129,6 @@ const registerRules = {
   confirmPassword: [
     { validator: checkConfirmPassword, trigger: 'blur' }
   ],
-  money: [
-    { required: true, message: '请输入金额', trigger: 'blur' },
-    { type: 'number', message: '金额必须是数字', trigger: 'blur', transform: (value) => Number(value) }
-  ]
 }
 
 // 注册方法
@@ -165,7 +149,6 @@ const handleRegister = async () => {
       id: Number(registerForm.id),  // 确保是数字类型
       name: registerForm.name,
       password: registerForm.password,
-      money: Number(registerForm.money)  // 确保是数字类型
     }
 
     console.log('发送注册数据:', submitData)
@@ -174,7 +157,6 @@ const handleRegister = async () => {
       id: submitData.id,
       name: submitData.name,
       password: submitData.password,
-      money: submitData.money
     })
 
     console.log('注册响应:', response.data)

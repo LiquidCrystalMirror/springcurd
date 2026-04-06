@@ -6,4 +6,5 @@ import org.example.springbootdemo.query.base.BaseQuery;
 public class UserQuery extends BaseQuery {
     private String name;
     private byte[] status;
+    private byte[] roleId;
 }

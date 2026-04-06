@@ -7,7 +7,6 @@ public class UserVO {
 
     private Integer id;
     private String name;
-    private Integer money;
     private Byte status;
-    private Byte role_id;
+    private Byte roleId;
 }

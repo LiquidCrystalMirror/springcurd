@@ -11,7 +11,7 @@ public interface UserService {
     List<UserVO> getUserList();
     UserVO getUserById(int id);
     int addUser(UserDTO userDTO);
-    int updateUser(UserVO userVO);
+    int updateUser(UserDTO userDTO);
     int deleteUser(int id);
     boolean checkPassword(int id,String password);
     PageInfo<UserVO> find(UserQuery userQuery);

@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.vo.UserVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ public class JwtUtil {
     public String generateToken(UserVO uservo) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", uservo.getId());
-        claims.put("roleId", uservo.getRole_id());
+        claims.put("roleId", uservo.getRoleId());
 
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
@@ -40,7 +41,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public UserVO getUserFromToken(String token) {
+    public UserDTO getUserFromToken(String token) {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec key = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
 
@@ -50,9 +51,9 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload();
 
-        UserVO user = new UserVO();
+        UserDTO user = new UserDTO();
         user.setId(claims.get("userId", Integer.class));
-        user.setRole_id(claims.get("roleId", Byte.class));
+        user.setRoleId(claims.get("roleId", Byte.class));
 
         return user;
     }

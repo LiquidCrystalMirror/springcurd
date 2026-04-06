@@ -2,6 +2,7 @@ package org.example.springbootdemo.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.util.JwtUtil;
 import org.example.springbootdemo.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,6 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtUtil jwtUtil;
 
-//    // 定义不需要拦截的白名单路径
-//    private static final String[] WHITE_LIST = {
-//            "/login",
-//            "/register",
-//            "/users/login",
-//            "/users/register"
-//    };
-
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
@@ -29,12 +22,6 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         String uri = request.getRequestURI();
 
-//        // 检查是否在白名单中
-//        for (String path : WHITE_LIST) {
-//            if (uri.contains(path)) {
-//                return true; // 放行
-//            }
-//        }
 
         // 从请求头获取 Token
         String authorization = request.getHeader("Authorization");
@@ -47,7 +34,7 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         try {
             // 解析 Token 获取用户信息
-            UserVO user = jwtUtil.getUserFromToken(token);
+            UserDTO user = jwtUtil.getUserFromToken(token);
 
             // 将用户信息存入请求属性中，Controller 可以直接使用
             request.setAttribute("currentUser", user);
