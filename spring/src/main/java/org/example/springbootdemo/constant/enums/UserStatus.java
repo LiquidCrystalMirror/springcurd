@@ -1,4 +1,4 @@
-package org.example.springbootdemo.enums;
+package org.example.springbootdemo.constant.enums;
 
 /**
  * 用户状态枚举

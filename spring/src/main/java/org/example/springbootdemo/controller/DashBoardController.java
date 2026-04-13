@@ -1,12 +1,12 @@
 package org.example.springbootdemo.controller;
 
 import com.github.pagehelper.PageInfo;
+import jakarta.annotation.Resource;
 import org.example.springbootdemo.dto.ApiResult;
 import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.query.UserQuery;
 import org.example.springbootdemo.service.UserService;
 import org.example.springbootdemo.vo.UserVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/dashboard")
 public class DashBoardController {
-    @Autowired
+    @Resource
     private UserService userService;
     @PostMapping("/getUsers")
     public ApiResult<PageInfo<UserVO>> getUsers(UserQuery userQuery){

@@ -9,7 +9,6 @@ import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.service.UserService;
 import org.example.springbootdemo.util.PasswordUtil;
 import org.example.springbootdemo.vo.UserVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.example.springbootdemo.util.JwtUtil;
 
@@ -17,9 +16,9 @@ import org.example.springbootdemo.util.JwtUtil;
 @RequestMapping("/users")
 @Tag(name = "用户管理", description = "用户登录、注册等相关接口")
 public class UserController {
-    @Autowired
+    @Resource
     private UserService userService;
-    @Autowired
+    @Resource
     private JwtUtil jwtUtil;
     @Resource
     private PasswordUtil passwordUtil;

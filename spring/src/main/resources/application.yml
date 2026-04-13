@@ -6,4 +6,4 @@ server:
 
 spring:
   config:
-    import: classpath:application-mapper.yml,application-springdoc.yml,application-data.yml
+    import: classpath:application-mapper.yml,application-springdoc.yml,application-data.yml,application-redis.yml

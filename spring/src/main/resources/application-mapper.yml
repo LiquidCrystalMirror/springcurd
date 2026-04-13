@@ -5,9 +5,12 @@ spring:
     password: "052011"
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-mybatis:
+mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: org.example.springbootdemo.vo,org.example.springbootdemo.dto,org.example.springbootdemo.pojo,org.example.springbootdemo.query
+  type-aliases-package: org.example.springbootdemo.vo,org.example.springbootdemo.dto,org.example.springbootdemo.pojo,org.example.springbootdemo.query,org.example.springbootdemo.entity
+  global-config:
+    db-config:
+      id-type: assign_id   # 雪花算法主键策略
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

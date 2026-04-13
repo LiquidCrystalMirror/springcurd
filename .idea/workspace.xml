@@ -8,24 +8,13 @@
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/SpringBootDemoApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/SpringBootDemoApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/UserDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/UserQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/UserQuery.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/JwtUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/UserVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/UserVO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/User.sql" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/User.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/enums/UserStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/UserStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/api/UserApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/UserApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/Register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Register.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/views/user/ListView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/user/ListView.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,10 +24,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Vue Options API Component" />
         <option value="JavaScript File" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -89,11 +78,14 @@
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.4816092&quot;,
     &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;ts.external.directory.path&quot;: &quot;E:\\ideal\\IntelliJ IDEA 2024.1.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ],
     &quot;vue.recent.templates&quot;: [
       &quot;Vue Options API Component&quot;
     ]
@@ -107,6 +99,9 @@
       <recent name="E:\实训\我的源码\springBootDemo\vue\src\views\dept" />
       <recent name="E:\实训\我的源码\springBootDemo\vue\src\views\user" />
       <recent name="E:\实训\我的源码\springBootDemo\src\springBootProject\src" />
+    </key>
+    <key name="ExtractSuperBase.RECENT_KEYS">
+      <recent name="org.example.springbootdemo.service" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -194,6 +189,20 @@
       <workItem from="1775313804469" duration="2541000" />
       <workItem from="1775397254897" duration="44000" />
       <workItem from="1775397326207" duration="151000" />
+      <workItem from="1775471142981" duration="3247000" />
+      <workItem from="1775524438779" duration="52000" />
+      <workItem from="1775524541347" duration="4230000" />
+      <workItem from="1775542510872" duration="260000" />
+      <workItem from="1775542779787" duration="4474000" />
+      <workItem from="1775547524190" duration="2775000" />
+      <workItem from="1775550516624" duration="1566000" />
+      <workItem from="1775611668018" duration="7074000" />
+      <workItem from="1775629392690" duration="3751000" />
+      <workItem from="1775718208651" duration="4539000" />
+      <workItem from="1775734081251" duration="100000" />
+      <workItem from="1775791753894" duration="23000" />
+      <workItem from="1775911292816" duration="14000" />
+      <workItem from="1776042825026" duration="9829000" />
     </task>
     <servers />
   </component>

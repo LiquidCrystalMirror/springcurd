@@ -1,0 +1,26 @@
+# application-redis.yml
+redis:
+  redisson:
+    config: |
+      singleServerConfig:
+        address: "redis://127.0.0.1:6379"
+        database: 0
+        connectionPoolSize: 64
+      codec: !<org.redisson.codec.JsonJacksonCodec> {}
+
+# 新增库存脚本相关配置
+stock:
+  script:
+    timeout: 300  # 脚本执行默认超时时间（秒）
+    path:
+      batch-operation: lua/batch_deduct.lua
+      rollback: lua/rollback.lua
+      query: lua/query.lua
+    type:
+      deduct: deduct
+      add: add
+  queue:
+    batch-size: 50
+    deduct-queue: async:queue:deduct
+    add-queue: async:queue:add
+    rollback-queue: async:queue:rollback
