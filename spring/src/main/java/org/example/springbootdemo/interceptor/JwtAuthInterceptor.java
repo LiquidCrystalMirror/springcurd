@@ -1,18 +1,17 @@
 package org.example.springbootdemo.interceptor;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.springbootdemo.dto.UserDTO;
 import org.example.springbootdemo.util.JwtUtil;
-import org.example.springbootdemo.vo.UserVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class JwtAuthInterceptor implements HandlerInterceptor {
 
-    @Autowired
+    @Resource
     private JwtUtil jwtUtil;
 
     @Override

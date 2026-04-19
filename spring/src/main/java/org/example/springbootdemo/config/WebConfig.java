@@ -28,7 +28,9 @@ public class WebConfig implements WebMvcConfigurer {
                     "/swagger-resources/**",
                     "/webjars/**",
                     "/v3/api-docs",
-                    "/swagger-ui.html"
+                    "/swagger-ui.html",
+                    "/orders/**",
+                    "/admin/stock/**"
                 );
         registry.addInterceptor(roleAuthInterceptor)
                 .addPathPatterns("/dashboard/**")  // 拦截所有路径

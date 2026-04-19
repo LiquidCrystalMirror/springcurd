@@ -23,6 +23,13 @@ public class ApiResult<T> {
         return apiResult;
     }
 
+    public static <T> ApiResult<T> success(String message) {
+        ApiResult<T> apiResult = new ApiResult<>();
+        apiResult.setCode(200);
+        apiResult.setMessage(message);
+        return apiResult;
+    }
+
     public static <T> ApiResult<T> error(Integer code, String message) {
         ApiResult<T> apiResult = new ApiResult<>();
         apiResult.setCode(code);

@@ -8,13 +8,27 @@
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/SpringBootDemoApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/SpringBootDemoApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/StockScriptProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/StockScriptProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/enums/UserStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/UserStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImp.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ApiResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ApiResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/OrderDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ProductStockDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/OrderDetailMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/OrderDetailMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/OrderDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/OrderDetailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderDetailServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/LuaScriptManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/LuaScriptManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/batch_deduct.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/batch_deduct.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/DeptMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/DeptMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/OrderDetailMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/OrderDetailMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock.sql" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/stock.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/request/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/request/request.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +40,8 @@
       <list>
         <option value="Vue Options API Component" />
         <option value="JavaScript File" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -77,6 +91,7 @@
     &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.4816092&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;ts.external.directory.path&quot;: &quot;E:\\ideal\\IntelliJ IDEA 2024.1.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
@@ -92,6 +107,9 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="org.example.springbootdemo.service" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\实训\我的源码\springBootDemo\vue\src\views\user" />
     </key>
@@ -203,6 +221,19 @@
       <workItem from="1775791753894" duration="23000" />
       <workItem from="1775911292816" duration="14000" />
       <workItem from="1776042825026" duration="9829000" />
+      <workItem from="1776061622039" duration="8274000" />
+      <workItem from="1776132777562" duration="6009000" />
+      <workItem from="1776138976124" duration="69000" />
+      <workItem from="1776147308620" duration="8283000" />
+      <workItem from="1776216390648" duration="8743000" />
+      <workItem from="1776234728486" duration="5330000" />
+      <workItem from="1776243096722" duration="83000" />
+      <workItem from="1776324797639" duration="4687000" />
+      <workItem from="1776388282731" duration="8505000" />
+      <workItem from="1776523445233" duration="655000" />
+      <workItem from="1776580394186" duration="2692000" />
+      <workItem from="1776593535007" duration="8955000" />
+      <workItem from="1776605231933" duration="23000" />
     </task>
     <servers />
   </component>

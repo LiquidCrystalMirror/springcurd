@@ -16,6 +16,8 @@ stock:
       batch-operation: lua/batch_deduct.lua
       rollback: lua/rollback.lua
       query: lua/query.lua
+      cancel: lua/cancel.lua
+      replenish: lua/replenish.lua
     type:
       deduct: deduct
       add: add
@@ -24,3 +26,6 @@ stock:
     deduct-queue: async:queue:deduct
     add-queue: async:queue:add
     rollback-queue: async:queue:rollback
+  retry:
+    max-attempts: 3  # 最大重试次数
+    base-interval: 100  # 基础重试间隔（毫秒），实际间隔 = base-interval * (retry + 1)

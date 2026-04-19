@@ -37,4 +37,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public int deleteById(Long id) {
         return orderDetailMapper.deleteById(id);
     }
+    @Override
+    public OrderDetail findByOrderAndProduct(String orderNo, String platformId, Long productId){
+        return orderDetailMapper.findByOrderAndProduct(orderNo, platformId, productId);
+    }
+    @Override
+    public int updateStatusToCancelByProduct(String orderNo, String platformId, Long productId){
+        return orderDetailMapper.updateStatusToCancelByProduct(orderNo, platformId, productId);
+    }
 }

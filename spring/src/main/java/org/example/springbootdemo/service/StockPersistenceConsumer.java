@@ -1,8 +1,10 @@
 package org.example.springbootdemo.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbootdemo.config.QueueConsumerProperties;
 import org.example.springbootdemo.config.StockScriptProperties;
@@ -10,20 +12,24 @@ import org.example.springbootdemo.entity.OrderDetail;
 import org.example.springbootdemo.entity.ProductStock;
 import org.example.springbootdemo.mapper.OrderDetailMapper;
 import org.example.springbootdemo.mapper.ProductStockMapper;
-import org.redisson.api.RList;
+import org.example.springbootdemo.util.StructuredLogger;
+import org.redisson.api.RBucket;
 import org.redisson.api.RQueue;
 import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import static org.example.springbootdemo.util.StructuredLogger.LogCategory.*;
+
 
 /**
- * 库存操作异步持久化消费者
- * 从 Redis List 中拉取业务单号，将操作结果持久化到 MySQL
+ * 库存操作异步持久化消费者（修正版）
+ * 从 Redis List 中拉取包含商品明细的消息，直接使用消息中的数量持久化到 MySQL
  */
 @Slf4j
 @Component
@@ -46,181 +52,233 @@ public class StockPersistenceConsumer {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * 消费扣减队列（每2秒执行一次）
-     */
     @Scheduled(fixedDelay = 2000)
     public void consumeDeductQueue() {
-        consumeQueue(queueProperties.getDeductQueue(), scriptProperties.getType().getDeduct());
+        try {
+            StructuredLogger.debug(ORDER_MYSQL, "SYSTEM", 
+                    "开始消费扣减队列");
+            consumeQueue(queueProperties.getDeductQueue(), scriptProperties.getType().getDeduct());
+        } catch (Exception e) {
+            StructuredLogger.error(ORDER_MYSQL, "SYSTEM", 
+                    "扣减队列消费任务异常，可能原因：Redis连接断开或消息解析失败", e);
+        }
     }
 
-    /**
-     * 消费增加队列（每2秒执行一次）
-     */
     @Scheduled(fixedDelay = 2000)
     public void consumeAddQueue() {
-        consumeQueue(queueProperties.getAddQueue(), scriptProperties.getType().getAdd());
+        try {
+            StructuredLogger.debug(REPLENISH_MYSQL, "SYSTEM", 
+                    "开始消费增加队列");
+            consumeQueue(queueProperties.getAddQueue(), scriptProperties.getType().getAdd());
+        } catch (Exception e) {
+            StructuredLogger.error(REPLENISH_MYSQL, "SYSTEM", 
+                    "增加队列消费任务异常，可能原因：Redis连接断开或消息解析失败", e);
+        }
     }
 
-    /**
-     * 通用队列消费逻辑
-     * @param queueName 队列名称
-     * @param opType    操作类型（deduct / add）
-     */
+    @Scheduled(fixedDelay = 2000)
+    public void consumeRollbackQueue() {
+        try {
+            StructuredLogger.debug(ORDER_MYSQL, "SYSTEM", 
+                    "开始消费回滚队列");
+            consumeQueue(queueProperties.getRollbackQueue(), "rollback");
+        } catch (Exception e) {
+            StructuredLogger.error(ORDER_MYSQL, "SYSTEM", 
+                    "回滚队列消费任务异常，可能原因：Redis连接断开或消息解析失败", e);
+        }
+    }
+
     private void consumeQueue(String queueName, String opType) {
-        RQueue<String> queue = redissonClient.getQueue(queueName);  // 改用 getQueue
+        // 使用 StringCodec 避免 JsonJacksonCodec 反序列化标准 JSON 报错
+        RQueue<String> queue = redissonClient.getQueue(queueName, new StringCodec());
         if (queue.isEmpty()) {
             return;
         }
 
-        List<String> bizNos = new ArrayList<>();
+        List<String> rawMessages = new ArrayList<>();
         for (int i = 0; i < queueProperties.getBatchSize(); i++) {
-            String bizNo = queue.poll();
-            if (bizNo == null) break;
-            bizNos.add(bizNo);
+            String raw = queue.poll();
+            if (raw == null) break;
+            rawMessages.add(raw);
         }
 
-        if (bizNos.isEmpty()) return;
+        if (rawMessages.isEmpty()) return;
 
-        log.info("开始消费 {} 队列，拉取 {} 条消息", queueName, bizNos.size());
+        StructuredLogger.info(ORDER_MYSQL, "SYSTEM", 
+                "开始消费 {} 队列，拉取 {} 条消息", queueName, rawMessages.size());
 
-        int successCount = 0;
-        int failCount = 0;
+        int successCount = 0, failCount = 0, discardCount = 0;
 
-        for (String bizNo : bizNos) {
+        for (String rawMsg : rawMessages) {
             try {
-                persistBizNo(bizNo, opType);
+                QueueMessage msg = parseQueueMessage(rawMsg);
+                if (msg == null) {
+                    StructuredLogger.error(ORDER_MYSQL, "UNKNOWN", 
+                            "队列消息格式错误，丢弃，可能原因：JSON格式不正确或字段缺失");
+                    discardCount++;
+                    continue;
+                }
+                persistBizNo(msg, opType);
                 successCount++;
             } catch (Exception e) {
                 failCount++;
-                log.error("持久化失败，bizNo: {}, opType: {}", bizNo, opType, e);
-                // 重新放回队列尾部，等待重试（防止消息丢失）
-                queue.add(bizNo);
+                String bizNo = "UNKNOWN";
+                try {
+                    QueueMessage tempMsg = parseQueueMessage(rawMsg);
+                    if (tempMsg != null) bizNo = tempMsg.getBizNo();
+                } catch (Exception ignored) {}
+                
+                StructuredLogger.error(ORDER_MYSQL, bizNo, 
+                        "持久化失败，消息重新入队，可能原因：数据库连接超时、唯一约束冲突或乐观锁失败", e);
+                queue.add(rawMsg);
             }
         }
 
-        log.info("消费 {} 队列完成，成功: {}, 失败: {}", queueName, successCount, failCount);
+        StructuredLogger.info(ORDER_MYSQL, "SYSTEM", 
+                "消费 {} 队列完成，成功: {}, 失败(重试): {}, 丢弃: {}",
+                queueName, successCount, failCount, discardCount);
     }
 
-    /**
-     * 持久化单个业务单号的操作
-     * @param bizNo  业务单号
-     * @param opType 操作类型
-     */
-    private void persistBizNo(String bizNo, String opType) {
-        // 1. 构建快照key并获取快照内容
-        String snapshotKey = "biz:snapshot:" + opType + ":" + bizNo;
-        String snapshotJson = redissonClient.<String>getBucket(snapshotKey).get();
-        if (snapshotJson == null) {
-            log.warn("快照不存在，可能已过期或被删除，bizNo: {}, snapshotKey: {}", bizNo, snapshotKey);
-            return;
+    private void persistBizNo(QueueMessage msg, String opType) {
+        String bizNo = msg.getBizNo();
+        String platformId = msg.getPlatformId();
+        List<QueueMessage.Item> items = msg.getItems();
+
+        // 扣减/增加操作：更新备份表，并记录订单明细（仅扣减）
+        if (opType.equals(scriptProperties.getType().getDeduct()) ||
+                opType.equals(scriptProperties.getType().getAdd())) {
+
+            for (QueueMessage.Item item : items) {
+                String redisKey = String.valueOf(item.getKey());
+                int quantity = item.getQuantity();
+
+                // 获取当前 Redis 中的库存值（用于备份表）
+                // 使用 StringCodec 确保获取到字符串，或使用 RBucket<Object> 自动处理类型
+                RBucket<Object> bucket = redissonClient.getBucket(redisKey, new StringCodec());
+                Object stockValue = bucket.get();
+                if (stockValue == null) {
+                    StructuredLogger.warn(ORDER_MYSQL, bizNo, 
+                            "Redis key 不存在，跳过: {}，可能原因：商品已被删除或key过期", redisKey);
+                    continue;
+                }
+                int currentStock = Integer.parseInt(stockValue.toString());
+
+                Long productId = extractProductId(redisKey);
+                if (productId == null) {
+                    StructuredLogger.error(ORDER_MYSQL, bizNo, 
+                            "无法从key中提取商品ID: {}，可能原因：key格式不符合预期", redisKey);
+                    continue;
+                }
+
+                // 更新 product_stock 备份表
+                StructuredLogger.debug(ORDER_MYSQL, bizNo, 
+                        "开始更新库存备份表，productId={}, stock={}", productId, currentStock);
+                updateProductStock(productId, currentStock);
+
+                // 扣减操作：插入订单明细
+                if (opType.equals(scriptProperties.getType().getDeduct())) {
+                    StructuredLogger.debug(ORDER_MYSQL, bizNo, 
+                            "开始插入订单明细，productId={}, quantity={}", productId, quantity);
+                    insertOrderDetail(bizNo, platformId, productId, quantity);
+                }
+                // 增加操作：这里只更新备份表，不自动关联订单状态变更
+                // 如需处理退货，应由专门的回滚接口负责
+            }
+        } else if ("rollback".equals(opType)) {
+            // 回滚操作：更新订单明细状态为已回滚
+            StructuredLogger.info(ORDER_MYSQL, bizNo, 
+                    "开始执行回滚操作，更新订单状态为已回滚");
+            updateOrderDetailStatusToRollback(bizNo, platformId);
         }
 
-        // 2. 解析快照：Map<redisKey, 原始值>
-        Map<String, String> snapshot;
-        try {
-            snapshot = objectMapper.readValue(snapshotJson, new TypeReference<Map<String, String>>() {});
-        } catch (Exception e) {
-            log.error("解析快照JSON失败，bizNo: {}, snapshotJson: {}", bizNo, snapshotJson, e);
-            return;
+        // 删除快照（扣减/增加的快照key为 biz:snapshot:{opType}:{bizNo}）
+        if (!"rollback".equals(opType)) {
+            String snapshotKey = "biz:snapshot:" + opType + ":" + bizNo;
+            redissonClient.getBucket(snapshotKey, new StringCodec()).delete();
+            StructuredLogger.debug(ORDER_MYSQL, bizNo, 
+                    "持久化完成并删除快照: {}", snapshotKey);
         }
-
-        // 3. 遍历每个商品，计算变化量并持久化
-        for (Map.Entry<String, String> entry : snapshot.entrySet()) {
-            String redisKey = entry.getKey();
-            int originalStock = Integer.parseInt(entry.getValue());
-
-            // 获取当前Redis中的库存值
-            String currentStockStr = redissonClient.<String>getBucket(redisKey).get();
-            if (currentStockStr == null) {
-                log.warn("Redis key 不存在，跳过处理: {}", redisKey);
-                continue;
-            }
-            int currentStock = Integer.parseInt(currentStockStr);
-
-            // 计算变化量（绝对值）
-            int change = Math.abs(originalStock - currentStock);
-            if (change == 0) {
-                log.debug("库存无变化，跳过: {}, original: {}, current: {}", redisKey, originalStock, currentStock);
-                continue;
-            }
-
-            // 提取商品ID（假设key格式为 product:stock:1001）
-            Long productId = extractProductId(redisKey);
-            if (productId == null) {
-                log.warn("无法从key中提取商品ID: {}", redisKey);
-                continue;
-            }
-
-            // 4. 更新 product_stock 表（备份值）
-            updateProductStock(productId, currentStock);
-
-            // 5. 插入订单明细（仅扣减操作需要记录订单）
-            if (opType.equals(scriptProperties.getType().getDeduct())) {
-                insertOrderDetail(bizNo, productId, change);
-            }
-            // 增加操作通常不记录订单明细，可根据业务需求决定
-        }
-
-        // 6. 持久化完成后删除快照（可选，节省Redis内存）
-        redissonClient.getBucket(snapshotKey).delete();
-        log.debug("持久化完成并删除快照: {}", snapshotKey);
     }
 
-    /**
-     * 更新商品库存备份表（带乐观锁重试）
-     */
     private void updateProductStock(Long productId, int newStock) {
-        // 先查询当前记录及版本号
         ProductStock stock = productStockMapper.queryById(productId);
         if (stock == null) {
-            // 不存在则插入
+            StructuredLogger.info(REPLENISH_MYSQL, "SYSTEM", 
+                    "商品库存记录不存在，自动创建新记录，productId={}, stock={}", productId, newStock);
             stock = new ProductStock();
             stock.setProductId(productId);
             stock.setStock(newStock);
             stock.setVersion(0);
             productStockMapper.insert(stock);
+            StructuredLogger.info(REPLENISH_MYSQL, "SYSTEM", 
+                    "商品库存记录创建成功，productId={}", productId);
             return;
         }
 
-        // 存在则使用乐观锁更新
-        int currentVersion = stock.getVersion();
-        int rows = productStockMapper.updateStockWithVersion(productId, newStock, currentVersion);
-        if (rows == 0) {
-            // 乐观锁冲突，重试一次
-            log.warn("乐观锁冲突，重试更新 productId: {}", productId);
-            stock = productStockMapper.queryById(productId);
-            if (stock != null) {
-                productStockMapper.updateStockWithVersion(productId, newStock, stock.getVersion());
+        int maxRetries = 3;
+        for (int i = 0; i < maxRetries; i++) {
+            int currentVersion = stock.getVersion();
+            int rows = productStockMapper.updateStockWithVersion(productId, newStock, currentVersion);
+            if (rows > 0) {
+                StructuredLogger.debug(ORDER_MYSQL, "SYSTEM", 
+                        "库存备份表更新成功，productId={}, version={}", productId, currentVersion);
+                return;
+            }
+
+            StructuredLogger.warn(ORDER_MYSQL, "SYSTEM", 
+                    "乐观锁冲突，重试 {}/{}，productId={}，可能原因：并发更新导致版本不一致", 
+                    i + 1, maxRetries, productId);
+            if (i < maxRetries - 1) {
+                try { Thread.sleep(10L * (i + 1)); } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    StructuredLogger.error(ORDER_MYSQL, "SYSTEM", 
+                            "库存更新重试被中断，productId={}", productId, e);
+                    throw new RuntimeException("重试中断", e);
+                }
+                stock = productStockMapper.queryById(productId);
+                if (stock == null) {
+                    StructuredLogger.error(ORDER_MYSQL, "SYSTEM", 
+                            "库存记录不存在，productId={}，可能原因：记录被其他事务删除", productId);
+                    throw new RuntimeException("记录不存在: " + productId);
+                }
             }
         }
+        StructuredLogger.error(ORDER_MYSQL, "SYSTEM", 
+                "乐观锁重试失败，productId={}，可能原因：高并发场景下持续冲突", productId);
+        throw new RuntimeException("乐观锁重试失败，productId=" + productId);
     }
 
-    /**
-     * 插入订单明细
-     */
-    private void insertOrderDetail(String bizNo, Long productId, int quantity) {
+    private void insertOrderDetail(String bizNo, String platformId, Long productId, int quantity) {
         OrderDetail detail = new OrderDetail();
+        detail.setId(System.currentTimeMillis()); // 使用时间戳作为ID
         detail.setOrderNo(bizNo);
-        detail.setPlatformId(extractPlatformId(bizNo)); // 需根据业务规则实现
+        detail.setPlatformId(platformId);
         detail.setProductId(productId);
         detail.setQuantity(quantity);
-        detail.setStatus(1); // 正常
+        detail.setStatus(1);
         detail.setCreateTime(LocalDateTime.now());
         detail.setUpdateTime(LocalDateTime.now());
 
         try {
             orderDetailMapper.insert(detail);
+            StructuredLogger.debug(ORDER_MYSQL, bizNo, 
+                    "订单明细插入成功，productId={}", productId);
+        } catch (org.springframework.dao.DuplicateKeyException e) {
+            StructuredLogger.debug(ORDER_MYSQL, bizNo, 
+                    "订单明细已存在，跳过（幂等性保护），productId={}", productId);
         } catch (Exception e) {
-            // 可能因为唯一约束冲突（已存在记录），此时忽略
-            log.warn("订单明细插入失败（可能已存在）: bizNo={}, productId={}", bizNo, productId, e);
+            StructuredLogger.error(ORDER_MYSQL, bizNo, 
+                    "插入订单明细失败，可能原因：唯一约束冲突、外键约束或数据库连接异常", e);
+            throw e;
         }
     }
 
-    /**
-     * 从Redis key中提取商品ID
-     * 假设key格式为 "product:stock:1001"
-     */
+    private void updateOrderDetailStatusToRollback(String bizNo, String platformId) {
+        int rows = orderDetailMapper.updateStatusToRollback(bizNo, platformId);
+        StructuredLogger.info(ORDER_MYSQL, bizNo, 
+                "回滚操作更新订单状态完成，影响行数: {}", rows);
+    }
+
     private Long extractProductId(String redisKey) {
         try {
             String[] parts = redisKey.split(":");
@@ -230,12 +288,29 @@ public class StockPersistenceConsumer {
         }
     }
 
-    /**
-     * 从业务单号中提取平台标识
-     * 示例：假设bizNo格式为 "ORDER_20250301_001"，可提取固定前缀
-     */
-    private String extractPlatformId(String bizNo) {
-        // 简化处理，实际可根据业务规则解析
-        return "DEFAULT_PLATFORM";
+    // ---------- 内部类 ----------
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class QueueMessage {
+        private String bizNo;
+        private String platformId;
+        private List<Item> items;
+
+        @Data
+        @AllArgsConstructor
+        @NoArgsConstructor
+        private static class Item {
+            private Object key;  // Lua 脚本可能返回 String 或 Integer
+            private int quantity;
+        }
+    }
+
+    private QueueMessage parseQueueMessage(String json) {
+        try {
+            return objectMapper.readValue(json, QueueMessage.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

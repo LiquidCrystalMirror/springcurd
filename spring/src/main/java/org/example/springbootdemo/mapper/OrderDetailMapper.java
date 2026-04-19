@@ -19,4 +19,10 @@ public interface OrderDetailMapper {
     int update(OrderDetail orderDetail);
 
     int deleteById(@Param("id") Long id);
+
+    int updateStatusToRollback(@Param("orderNo") String orderNo, @Param("platformId") String platformId);
+
+    OrderDetail findByOrderAndProduct(@Param("orderNo") String orderNo, @Param("platformId") String platformId, @Param("productId") Long productId);
+
+    int updateStatusToCancelByProduct(@Param("orderNo") String orderNo, @Param("platformId") String platformId, @Param("productId") Long productId);
 }

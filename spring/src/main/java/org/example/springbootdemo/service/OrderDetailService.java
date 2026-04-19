@@ -14,4 +14,8 @@ public interface OrderDetailService {
     int update(OrderDetail orderDetail);
 
     int deleteById(Long id);
+
+    OrderDetail findByOrderAndProduct(String orderNo, String platformId, Long productId);
+
+    int updateStatusToCancelByProduct(String orderNo, String platformId, Long productId);
 }

@@ -19,5 +19,6 @@ CREATE TABLE `order_detail` (
                                 `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                 PRIMARY KEY (`id`),
                                 UNIQUE KEY `uk_order_product` (`order_no`, `product_id`),
-                                KEY `idx_order_no` (`order_no`)
+                                KEY `idx_order_no` (`order_no`) COMMENT '订单号索引：用于按订单号查询',
+                                KEY `idx_order_platform` (`order_no`, `platform_id`) COMMENT '联合索引：用于按订单号和平台ID精确查询/更新'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单明细表';

@@ -6,7 +6,7 @@ const instance = axios.create({
     // baseURL: '/api',
     // timeout: 1000,
 });
-instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+instance.defaults.headers.post['Content-Type'] = 'application/json';
 
 // ... existing code ...
 
@@ -65,7 +65,7 @@ instance.interceptors.response.use(function (response) {
  */
 export function post(url, data = {}) {
     return new Promise((resolve, reject) => {
-        instance.post(url, qs.stringify(data)).then(
+        instance.post(url, data).then(
             response => {
                 resolve(response)
             },

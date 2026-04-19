@@ -6,8 +6,9 @@
 --   KEYS: 需要回滚的key列表（可选，为空则从快照恢复所有key）
 --   ARGV:
 --     [1]  业务单号（用于定位快照）
---     [2]  操作类型（与之前的操作类型对应：deduct/add）
---     [3]  是否删除快照（1=删除，0=保留）
+--     [2]  平台标识（用于定位快照）
+--     [3]  操作类型（与之前的操作类型对应：deduct/add）
+--     [4]  是否删除快照（1=删除，0=保留）
 --
 -- 返回值：[状态码, 消息, 业务单号]
 --   状态码: 1-成功, 0-失败
@@ -15,8 +16,9 @@
 
 -- 提取参数
 local biz_no = ARGV[1]
-local op_type = ARGV[2]
-local del_snapshot = tonumber(ARGV[3] or 1)  -- 默认删除快照
+local platform = ARGV[2]
+local op_type = ARGV[3]
+local del_snapshot = tonumber(ARGV[4] or 1)  -- 默认删除快照
 
 -- 构建快照key和幂等性key
 local snapshot_key = "biz:snapshot:" .. op_type .. ":" .. biz_no
@@ -58,7 +60,8 @@ end
 redis.call('DEL', idempotent_key)
 
 -- 6. 记录回滚日志到异步队列
-redis.call('RPUSH', 'async:queue:rollback', biz_no)
+local queue_msg = string.format('{"bizNo":"%s","platformId":"%s"}', biz_no, platform)
+redis.call('RPUSH', 'async:queue:rollback', queue_msg)
 
 -- 7. 返回成功结果
 return {1, "rollback_success", biz_no}

@@ -8,6 +8,7 @@ import org.example.springbootdemo.query.UserQuery;
 import org.example.springbootdemo.service.UserService;
 import org.example.springbootdemo.vo.UserVO;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,12 +18,12 @@ public class DashBoardController {
     @Resource
     private UserService userService;
     @PostMapping("/getUsers")
-    public ApiResult<PageInfo<UserVO>> getUsers(UserQuery userQuery){
+    public ApiResult<PageInfo<UserVO>> getUsers(@RequestBody UserQuery userQuery){
         PageInfo<UserVO> pageInfo = userService.find(userQuery);
         return ApiResult.success(pageInfo);
     }
     @PostMapping("/updateUsers")
-    public ApiResult<Void> updateUsers(UserDTO userDTO){
+    public ApiResult<Void> updateUsers(@RequestBody UserDTO userDTO){
         int result = userService.updateUser(userDTO);
         if (result>0) {
             return ApiResult.success();

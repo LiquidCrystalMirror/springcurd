@@ -8,7 +8,7 @@
     </resultMap>
 
     <!--查询单个-->
-    <select id="queryById" resultType="Dept">
+    <select id="queryById" resultMap="DeptMap">
         select
 id, name
         from dept
@@ -16,7 +16,7 @@ id, name
     </select>
 
     <!--分页查询-->
-    <select id="find" resultType="Dept" parameterType="DeptQuery">
+    <select id="find" resultMap="DeptMap" parameterType="DeptQuery">
         select id, name from dept
         <where>
             <if test="name != null and name != ''">

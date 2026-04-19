@@ -27,7 +27,7 @@ public class UserController {
             description = "通过用户ID和密码进行登录认证，成功返回用户信息及JWT Token"
     )
     @PostMapping("/login")
-    public ApiResult<LoginResponse> login(UserDTO userDTO){
+    public ApiResult<LoginResponse> login(@RequestBody UserDTO userDTO){
 
         if(userService.checkPassword(userDTO.getId(),userDTO.getPassword())){
             UserVO userVO = userService.getUserById(userDTO.getId());
@@ -43,7 +43,7 @@ public class UserController {
             description = "注册新用户账号，ID不能与已有用户重复"
     )
     @PostMapping("/register")
-    public ApiResult<UserVO> register(UserDTO userDTO){
+    public ApiResult<UserVO> register(@RequestBody UserDTO userDTO){
         userDTO.setPassword(passwordUtil.md5WithSalt(userDTO.getPassword()));
         int result = userService.addUser(userDTO);
         if (result>0) {

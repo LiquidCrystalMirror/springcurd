@@ -1,16 +1,20 @@
 package org.example.springbootdemo.dto;
 
-
 import lombok.Data;
-import java.time.LocalDateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import java.util.List;
 
 @Data
 public class OrderDTO {
-    private Long id;
+    @NotBlank(message = "订单号不能为空")
     private String orderNo;
+
+    @NotBlank(message = "平台标识不能为空")
     private String platformId;
-    private Long productId;
-    private Integer quantity;
-    private Byte status;
-    private LocalDateTime createTime;
+
+    @NotEmpty(message = "订单商品列表不能为空")
+    @Valid
+    private List<OrderItemDTO> items;
 }
+

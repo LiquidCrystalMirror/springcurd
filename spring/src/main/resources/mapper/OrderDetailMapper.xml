@@ -2,26 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.springbootdemo.mapper.OrderDetailMapper">
 
-    <resultMap id="BaseResultMap" type="org.example.springbootdemo.entity.OrderDetail">
-        <id property="id" column="id" jdbcType="BIGINT"/>
-        <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
-        <result property="platformId" column="platform_id" jdbcType="VARCHAR"/>
-        <result property="productId" column="product_id" jdbcType="BIGINT"/>
-        <result property="quantity" column="quantity" jdbcType="INTEGER"/>
-        <result property="status" column="status" jdbcType="TINYINT"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-    </resultMap>
 
     <!-- 根据主键查询 -->
-    <select id="queryById" resultMap="BaseResultMap">
+    <select id="queryById" resultType="OrderDetail">
         SELECT id, order_no, platform_id, product_id, quantity, status, create_time, update_time
         FROM order_detail
         WHERE id = #{id}
     </select>
 
     <!-- 分页查询 -->
-    <select id="find" resultMap="BaseResultMap" parameterType="org.example.springbootdemo.query.OrderQuery">
+    <select id="find" resultType="OrderDetail" parameterType="OrderQuery">
         SELECT id, order_no, platform_id, product_id, quantity, status, create_time, update_time
         FROM order_detail
         <where>
@@ -44,14 +34,14 @@
         ORDER BY id DESC
     </select>
 
-    <!-- 插入（MyBatis-Plus 的雪花ID会自动赋值给 id） -->
-    <insert id="insert" parameterType="org.example.springbootdemo.entity.OrderDetail">
+    <!-- 插入（ID由Java代码生成） -->
+    <insert id="insert" parameterType="OrderDetail">
         INSERT INTO order_detail (id, order_no, platform_id, product_id, quantity, status, create_time, update_time)
         VALUES (#{id}, #{orderNo}, #{platformId}, #{productId}, #{quantity}, #{status}, #{createTime}, #{updateTime})
     </insert>
 
     <!-- 更新 -->
-    <update id="update" parameterType="org.example.springbootdemo.entity.OrderDetail">
+    <update id="update" parameterType="OrderDetail">
         UPDATE order_detail
         <set>
             <if test="orderNo != null and orderNo != ''">order_no = #{orderNo},</if>
@@ -68,5 +58,37 @@
     <delete id="deleteById">
         DELETE FROM order_detail WHERE id = #{id}
     </delete>
+
+    <!-- 根据订单号和平台ID将明细状态更新为已回滚 -->
+    <update id="updateStatusToRollback">
+        UPDATE order_detail
+        SET status = 2,
+            update_time = NOW()
+        WHERE order_no = #{orderNo}
+          AND platform_id = #{platformId}
+    </update>
+
+
+
+    <!-- 根据订单号、平台ID和商品ID查询订单明细 -->
+    <select id="findByOrderAndProduct" resultType="OrderDetail">
+        SELECT id, order_no, platform_id, product_id, quantity, status, create_time, update_time
+        FROM order_detail
+        WHERE order_no = #{orderNo}
+          AND platform_id = #{platformId}
+        <if test="productId != null and productId != 0">
+          AND product_id = #{productId}
+        </if>
+    </select>
+
+    <!-- 根据订单号、平台ID和商品ID更新状态为已取消（部分退货） -->
+    <update id="updateStatusToCancelByProduct">
+        UPDATE order_detail
+        SET status = 0,
+            update_time = NOW()
+        WHERE order_no = #{orderNo}
+          AND platform_id = #{platformId}
+          AND product_id = #{productId}
+    </update>
 
 </mapper>
