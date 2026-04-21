@@ -8,11 +8,16 @@ import org.example.springbootdemo.dto.ApiResult;
 import org.example.springbootdemo.dto.OrderDTO;
 import org.example.springbootdemo.dto.OrderItemDTO;
 import org.example.springbootdemo.entity.OrderDetail;
+import org.example.springbootdemo.entity.ProductStock;
+import org.example.springbootdemo.mapper.ProductStockMapper;
 import org.example.springbootdemo.service.OrderDetailService;
 import org.example.springbootdemo.service.OrderProcessingService;
 import org.example.springbootdemo.util.LuaScriptManager;
 import org.example.springbootdemo.util.StructuredLogger;
 import org.example.springbootdemo.vo.OrderVO;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +35,10 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
     private OrderDetailService orderDetailService;
     @Resource
     private StockScriptProperties scriptProperties;
+    @Resource
+    private RedissonClient redissonClient;
+    @Resource
+    private ProductStockMapper productStockMapper;
 
     /**
      * 处理订单（批量扣减库存）
@@ -75,7 +84,18 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
             LuaScriptManager.BatchResult result = luaScriptManager.executeBatchDeduct(bizNo, platformId, operations);
 
             if (result.isSuccess()) {
-                // 构造返回结果
+                // 检查是否为幂等命中（重复请求）
+                String resultCode = result.getCode();
+                String resultMessage = result.getMessage();
+                
+                if ("already_success".equals(resultMessage)) {
+                    // 幂等命中：订单已处理过
+                    StructuredLogger.info(ORDER_REDIS, bizNo, 
+                            "订单已存在，幂等性拦截，请勿重复提交");
+                    return ApiResult.error(409, "订单已存在，请勿重复提交");
+                }
+                
+                // 首次成功：构造返回结果
                 OrderVO orderVO = new OrderVO();
                 orderVO.setOrderNo(bizNo);
                 orderVO.setPlatformId(platformId);
@@ -143,6 +163,7 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
         // 遍历每个商品，逐个取消（允许部分失败）
         for (Map.Entry<Long, Integer> entry : operations.entrySet()) {
             Long productId = entry.getKey();
+            Integer cancelQuantity = entry.getValue(); // 前端传入的取消数量
             try {
                 // 1. 查询订单明细
                 StructuredLogger.debug(ORDER_MYSQL, bizNo, 
@@ -152,6 +173,15 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                     sb.append("商品[").append(productId).append("]订单未找到\n");
                     StructuredLogger.warn(ORDER_MYSQL, bizNo, 
                             "取消订单失败，订单明细不存在，productId={}，可能原因：订单未创建或数据已被删除", productId);
+                    continue;
+                }
+                
+                // 1.1 验证取消数量（只支持全额取消）
+                if (!cancelQuantity.equals(orderDetail.getQuantity())) {
+                    sb.append("商品[").append(productId).append("]取消数量不匹配，购买数量=").append(orderDetail.getQuantity()).append(", 取消数量=").append(cancelQuantity).append("\n");
+                    StructuredLogger.warn(ORDER_MYSQL, bizNo, 
+                            "取消订单失败，取消数量与购买数量不一致，productId={}, 购买数量={}, 取消数量={}，当前业务只支持全额取消", 
+                            productId, orderDetail.getQuantity(), cancelQuantity);
                     continue;
                 }
                     
@@ -165,7 +195,8 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                 }
                     
                 // 3. 先执行Lua脚本回滚Redis库存（使用数据库中的完整数量，确保安全）
-                Map<Long, Integer> cancelOperations = Map.of(orderDetail.getProductId(), orderDetail.getQuantity());
+                Map<Long, Integer> cancelOperations = new HashMap<>();
+                cancelOperations.put(orderDetail.getProductId(), orderDetail.getQuantity());
                 StructuredLogger.info(ORDER_REDIS, bizNo, 
                         "开始回滚Redis库存，productId={}, quantity={}", productId, orderDetail.getQuantity());
                 LuaScriptManager.BatchResult batchResult = luaScriptManager.executeCancel(bizNo, platformId, cancelOperations);
@@ -216,17 +247,34 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                 }
                     
                 if (dbUpdated) {
-                    sb.append("商品[").append(productId).append("]取消成功\n");
-                    StructuredLogger.info(ORDER_MYSQL, bizNo, 
-                            "商品取消流程完成，productId={}", productId);
+                    // 5. 更新product_stock表的库存（从Redis读取最新值）
+                    try {
+                        updateProductStockFromRedis(productId);
+                        sb.append("商品[").append(productId).append("]取消成功\n");
+                        StructuredLogger.info(ORDER_MYSQL, bizNo, 
+                                "商品取消流程完成，productId={}", productId);
+                    } catch (Exception e) {
+                        // product_stock更新失败不影响订单状态，记录警告
+                        sb.append("商品[").append(productId).append("]取消成功，但库存备份表更新失败：").append(e.getMessage()).append("\n");
+                        StructuredLogger.warn(ORDER_MYSQL, bizNo, 
+                                "product_stock更新失败，productId={}，需人工检查库存一致性", productId, e);
+                    }
                 } else {
                     sb.append("商品[").append(productId).append("]数据库更新失败，Redis已回滚，请联系客服处理\n");
                     // 记录最严重级别的日志，要求人工介入
                     StructuredLogger.error(ORDER_MYSQL, bizNo, 
                             "【严重错误-需人工介入】取消订单时Redis已回滚但数据库更新失败（已重试{}次），productId={}，数据不一致风险！请立即检查并手动修复数据库状态。可能原因：数据库连接永久断开或记录被其他事务锁定。",
                             maxRetries, productId);
+                    // 注意：此时不应继续处理其他商品，因为已经出现数据不一致
+                    // 但为了尽量完成其他商品的取消，这里选择continue而非break
                 }
                     
+            } catch (RuntimeException e) {
+                // Redis操作彻底失败（重试后仍失败），抛出异常中断整个取消流程
+                StructuredLogger.error(ORDER_MYSQL, bizNo, 
+                        "取消订单Redis操作彻底失败，productId={}，中断后续商品处理，可能原因：Redis连接永久断开或Lua脚本执行异常", 
+                        productId, e);
+                throw e; // 重新抛出，让调用方知道有严重错误
             } catch (Exception e) {
                 // 捕获所有未预期的异常，确保不影响其他商品的取消
                 sb.append("商品[").append(productId).append("]系统异常：").append(e.getMessage()).append("\n");
@@ -235,10 +283,77 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                         productId, e);
             }
         }
-            
+        
         String resultMessage = sb.length() > 0 ? sb.toString() : "没有需要取消的商品";
         StructuredLogger.info(ORDER_MYSQL, bizNo, 
                 "订单取消流程结束，结果：{}", resultMessage);
+        
+        // 检查是否有失败的情况
+        if (sb.length() > 0) {
+            // 有失败或跳过的商品，返回400状态码
+            return ApiResult.error(400, resultMessage);
+        }
+        
         return ApiResult.success(resultMessage);
+    }
+
+    /**
+     * 从Redis读取最新库存值并更新到product_stock表
+     * @param productId 商品ID
+     */
+    private void updateProductStockFromRedis(Long productId) {
+        String redisKey = "product:stock:" + productId;
+        RBucket<Object> bucket = redissonClient.getBucket(redisKey, new StringCodec());
+        Object stockValue = bucket.get();
+        
+        if (stockValue == null) {
+            throw new RuntimeException("Redis中不存在该商品库存: " + redisKey);
+        }
+        
+        int currentStock = Integer.parseInt(stockValue.toString());
+        
+        // 使用乐观锁更新product_stock表
+        ProductStock stock = productStockMapper.queryById(productId);
+        if (stock == null) {
+            // 如果记录不存在，创建新记录
+            stock = new ProductStock();
+            stock.setProductId(productId);
+            stock.setStock(currentStock);
+            stock.setVersion(0);
+            productStockMapper.insert(stock);
+            StructuredLogger.info(ORDER_MYSQL, "SYSTEM", 
+                    "商品库存记录不存在，自动创建，productId={}, stock={}", productId, currentStock);
+        } else {
+            // 使用乐观锁更新
+            int maxRetries = 3;
+            for (int i = 0; i < maxRetries; i++) {
+                int currentVersion = stock.getVersion();
+                int rows = productStockMapper.updateStockWithVersion(productId, currentStock, currentVersion);
+                if (rows > 0) {
+                    StructuredLogger.debug(ORDER_MYSQL, "SYSTEM", 
+                            "product_stock更新成功，productId={}, stock={}, version={}", 
+                            productId, currentStock, currentVersion);
+                    return;
+                }
+                
+                // 乐观锁冲突，重试
+                StructuredLogger.warn(ORDER_MYSQL, "SYSTEM", 
+                        "乐观锁冲突，重试 {}/{}，productId={}", i + 1, maxRetries, productId);
+                if (i < maxRetries - 1) {
+                    try {
+                        Thread.sleep(10L * (i + 1));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("重试被中断", e);
+                    }
+                    // 重新查询最新版本
+                    stock = productStockMapper.queryById(productId);
+                    if (stock == null) {
+                        throw new RuntimeException("库存记录不存在: " + productId);
+                    }
+                }
+            }
+            throw new RuntimeException("乐观锁重试失败，productId=" + productId);
+        }
     }
 }

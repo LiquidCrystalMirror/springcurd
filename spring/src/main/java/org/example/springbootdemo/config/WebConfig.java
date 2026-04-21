@@ -2,6 +2,7 @@ package org.example.springbootdemo.config;
 
 import jakarta.annotation.Resource;
 import org.example.springbootdemo.interceptor.JwtAuthInterceptor;
+import org.example.springbootdemo.interceptor.ResponseTimeInterceptor;
 import org.example.springbootdemo.interceptor.RoleInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,8 @@ public class WebConfig implements WebMvcConfigurer {
     private JwtAuthInterceptor jwtAuthInterceptor;
     @Resource
     private RoleInterceptor roleAuthInterceptor;
+    @Resource
+    private ResponseTimeInterceptor responseTimeInterceptor;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthInterceptor)
@@ -37,5 +40,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(    // 排除白名单路径
                         "/dashboard/getUsers"
                 );
+        
+//        // 注册响应时间监控拦截器（放在最后，确保能监控所有请求）
+//        registry.addInterceptor(responseTimeInterceptor)
+//                .addPathPatterns("/**");
     }
 }

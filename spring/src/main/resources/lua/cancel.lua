@@ -9,6 +9,7 @@
 --     [N+1]   业务单号（bizNo / orderNo）
 --     [N+2]   平台标识（platformId）
 --     [N+3]   幂等标记超时时间（秒）
+--     [N+4]   商品ID（用于构建幂等性key）
 --
 -- 返回值：[状态码, 消息, 业务单号]
 --   状态码: 1-成功, 0-失败
@@ -23,9 +24,10 @@ end
 local biz_no      = ARGV[N + 1]
 local platform_id = ARGV[N + 2]
 local timeout     = tonumber(ARGV[N + 3])
+local product_id  = ARGV[N + 4]
 
--- 幂等性 key（独立于扣减/增加的幂等标记）
-local idempotent_key = "cancel:idempotent:" .. biz_no
+-- 幂等性 key（每个订单的每个商品独立幂等）
+local idempotent_key = "cancel:idempotent:" .. biz_no .. ":" .. product_id
 
 -- 1. 幂等性检查
 local processed = redis.call('GET', idempotent_key)

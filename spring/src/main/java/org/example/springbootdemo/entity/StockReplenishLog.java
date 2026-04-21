@@ -9,9 +9,8 @@ import java.time.LocalDateTime;
 @Data
 @TableName("stock_replenish_log")
 public class StockReplenishLog {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)  // 雪花算法生成批次ID
     private Long id;
-    private String replenishNo;
     private Long productId;
     private Integer quantity;
     private Integer stockBefore;

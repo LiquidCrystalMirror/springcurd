@@ -1,0 +1,3 @@
+2026-04-19 21:17:02.856 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-19 21:17:02.856] 消费 async:queue:deduct 队列完成，成功: 0, 失败(重试): 1, 丢弃: 0
+2026-04-19 21:18:39.134 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-19 21:18:39.133] 开始消费 async:queue:deduct 队列，拉取 1 条消息
+2026-04-19 21:18:39.436 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-19 21:18:39.436] 消费 async:queue:deduct 队列完成，成功: 1, 失败(重试): 0, 丢弃: 0

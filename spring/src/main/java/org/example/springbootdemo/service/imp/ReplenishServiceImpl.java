@@ -1,5 +1,6 @@
 package org.example.springbootdemo.service.imp;
 
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbootdemo.dto.ApiResult;
@@ -34,51 +35,43 @@ public class ReplenishServiceImpl implements ReplenishService {
 
     @Override
     public ApiResult<ReplenishVO> replenish(ReplenishDTO dto) {
-        String replenishNo = dto.getReplenishNo();
-
-        // 聚合
+        // 1. 聚合数量
         Map<Long, Integer> operations = new HashMap<>();
         for (ReplenishItemDTO item : dto.getItems()) {
             operations.merge(item.getProductId(), item.getQuantity(), Integer::sum);
-        }
-
-        if (replenishNo == null || replenishNo.trim().isEmpty()) {
-            return ApiResult.error(400, "补货单号不能为空");
         }
         if (operations.isEmpty()) {
             return ApiResult.error(400, "补货商品列表不能为空");
         }
 
-        StructuredLogger.info(REPLENISH_REDIS, replenishNo, 
+        // 2. 生成雪花批次ID (使用 MyBatis-Plus 内置工具，无需额外依赖)
+        Long batchId = IdWorker.getId();
+        StructuredLogger.info(REPLENISH_REDIS, "BATCH-" + batchId, 
                 "开始执行补货操作，商品种类数={}", operations.size());
 
-        // 执行 Lua 脚本
+        // 3. 执行 Lua 脚本
         LuaScriptManager.ReplenishResult luaResult;
         try {
-            StructuredLogger.debug(REPLENISH_REDIS, replenishNo, 
+            StructuredLogger.debug(REPLENISH_REDIS, "BATCH-" + batchId, 
                     "调用Lua脚本执行批量库存增加");
-            luaResult = luaScriptManager.executeReplenish(replenishNo, operations);
+            luaResult = luaScriptManager.executeReplenish(operations);
         } catch (Exception e) {
-            StructuredLogger.error(REPLENISH_REDIS, replenishNo, 
+            StructuredLogger.error(REPLENISH_REDIS, "BATCH-" + batchId, 
                     "补货Redis执行异常，可能原因：Redis连接断开、Lua脚本错误或网络超时", e);
             return ApiResult.error(500, "补货失败，Redis操作异常");
         }
 
         if (!luaResult.isSuccess()) {
-            StructuredLogger.warn(REPLENISH_REDIS, replenishNo, 
-                    "补货Redis操作失败，错误信息={}，可能原因：幂等性检查失败或参数错误", 
-                    luaResult.getMessage());
+            StructuredLogger.warn(REPLENISH_REDIS, "BATCH-" + batchId, 
+                    "补货Redis操作失败，错误信息={}", luaResult.getMessage());
             return ApiResult.error(400, luaResult.getMessage());
         }
 
-        StructuredLogger.info(REPLENISH_REDIS, replenishNo, 
-                "补货Redis操作成功，商品种类数={}（不存在的商品已自动初始化）", operations.size());
-
-        // 构建审计日志并同步更新 product_stock 表
+        // 4. 构建审计日志并同步更新 product_stock 表
         List<StockReplenishLog> logs = new ArrayList<>();
         for (Map.Entry<Long, Integer> e : operations.entrySet()) {
             StockReplenishLog log = new StockReplenishLog();
-            log.setReplenishNo(replenishNo);
+            log.setId(batchId);  // 使用雪花ID
             log.setProductId(e.getKey());
             log.setQuantity(e.getValue());
             log.setStatus(1);
@@ -86,15 +79,13 @@ public class ReplenishServiceImpl implements ReplenishService {
             if (change != null) {
                 log.setStockBefore(change.getBefore());
                 log.setStockAfter(change.getAfter());
-                
-                // 同步更新 product_stock 表（不存在则创建）
                 updateProductStock(e.getKey(), change.getAfter());
             }
             logs.add(log);
         }
 
-        // 写入补货审计日志（重试机制）
-        StructuredLogger.info(REPLENISH_MYSQL, replenishNo, 
+        // 5. 写入补货审计日志（重试机制）
+        StructuredLogger.info(REPLENISH_MYSQL, "BATCH-" + batchId, 
                 "开始写入补货审计日志，记录数={}", logs.size());
         
         boolean dbOk = false;
@@ -103,34 +94,30 @@ public class ReplenishServiceImpl implements ReplenishService {
             try {
                 replenishLogMapper.batchInsert(logs);
                 dbOk = true;
-                StructuredLogger.info(REPLENISH_MYSQL, replenishNo, 
-                        "补货审计日志写入成功");
+                StructuredLogger.info(REPLENISH_MYSQL, "BATCH-" + batchId, "补货审计日志写入成功");
                 break;
             } catch (org.springframework.dao.DuplicateKeyException e) {
-                // 唯一约束冲突说明记录已存在，视为成功（幂等性保护）
                 dbOk = true;
-                StructuredLogger.info(REPLENISH_MYSQL, replenishNo, 
-                        "补货日志已存在，跳过插入（幂等性保护）");
+                StructuredLogger.info(REPLENISH_MYSQL, "BATCH-" + batchId, 
+                        "补货日志已存在，跳过插入（联合主键幂等保护）");
                 break;
             } catch (Exception e) {
-                StructuredLogger.warn(REPLENISH_MYSQL, replenishNo, 
-                        "补货日志写入失败，第{}/{}次重试，可能原因：唯一约束冲突或连接超时", 
-                        i + 1, maxRetries, e);
+                StructuredLogger.warn(REPLENISH_MYSQL, "BATCH-" + batchId, 
+                        "补货日志写入失败，第{}/{}次重试", i + 1, maxRetries, e);
                 try { Thread.sleep(100); } catch (InterruptedException ignored) {}
             }
         }
 
         if (!dbOk) {
-            StructuredLogger.error(REPLENISH_MYSQL, replenishNo, 
-                    "【严重】补货日志最终写入失败，Redis已增加但数据库未记录，数据不一致风险！需人工介入检查。可能原因：数据库连接永久断开或未知异常。");
+            StructuredLogger.error(REPLENISH_MYSQL, "BATCH-" + batchId, 
+                    "【严重】补货日志最终写入失败，Redis已增加但数据库未记录，需人工介入。");
         }
 
         ReplenishVO vo = new ReplenishVO();
-        vo.setReplenishNo(replenishNo);
+        vo.setId(batchId);
         vo.setOperations(operations);
         
-        StructuredLogger.info(REPLENISH_MYSQL, replenishNo, 
-                "补货流程结束");
+        StructuredLogger.info(REPLENISH_MYSQL, "BATCH-" + batchId, "补货流程结束");
         return ApiResult.success(vo);
     }
 

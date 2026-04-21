@@ -1,3 +1,54 @@
-2026-04-19 21:17:02.856 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-19 21:17:02.856] 消费 async:queue:deduct 队列完成，成功: 0, 失败(重试): 1, 丢弃: 0
-2026-04-19 21:18:39.134 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-19 21:18:39.133] 开始消费 async:queue:deduct 队列，拉取 1 条消息
-2026-04-19 21:18:39.436 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-19 21:18:39.436] 消费 async:queue:deduct 队列完成，成功: 1, 失败(重试): 0, 丢弃: 0
+2026-04-21 09:55:39.375 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 09:55:39.374] 开始取消订单，platformId=PLATFORM_A, 商品种类数=2
+2026-04-21 09:55:39.669 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 09:55:39.669] 数据库状态更新成功，productId=1, 重试次数=0
+2026-04-21 09:55:39.669 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 09:55:39.669] 商品取消流程完成，productId=1
+2026-04-21 09:55:39.675 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 09:55:39.675] 数据库状态更新成功，productId=2, 重试次数=0
+2026-04-21 09:55:39.675 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 09:55:39.675] 商品取消流程完成，productId=2
+2026-04-21 09:55:39.675 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 09:55:39.675] 订单取消流程结束，结果：商品[1]取消成功
+商品[2]取消成功
+
+2026-04-21 10:09:11.300 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:09:11.300] 开始取消订单，platformId=PLATFORM_A, 商品种类数=2
+2026-04-21 10:09:11.548 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:09:11.548] 数据库状态更新成功，productId=1, 重试次数=0
+2026-04-21 10:09:11.548 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:09:11.548] 商品取消流程完成，productId=1
+2026-04-21 10:09:11.551 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:09:11.551] 取消订单跳过，订单状态不符合，productId=2, status=0，可能原因：订单已被取消或回滚
+2026-04-21 10:09:11.551 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:09:11.551] 订单取消流程结束，结果：商品[1]取消成功
+商品[2]订单已取消或回滚，当前状态：0
+
+2026-04-21 10:10:18.987 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:10:18.987] 开始取消订单，platformId=PLATFORM_A, 商品种类数=2
+2026-04-21 10:10:19.224 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:10:19.224] 数据库状态更新成功，productId=1, 重试次数=0
+2026-04-21 10:10:19.224 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:10:19.224] 商品取消流程完成，productId=1
+2026-04-21 10:10:19.226 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:10:19.226] 取消订单跳过，订单状态不符合，productId=2, status=0，可能原因：订单已被取消或回滚
+2026-04-21 10:10:19.227 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:10:19.227] 订单取消流程结束，结果：商品[1]取消成功
+商品[2]订单已取消或回滚，当前状态：0
+
+2026-04-21 10:11:32.962 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:11:32.962] 开始取消订单，platformId=PLATFORM_A, 商品种类数=2
+2026-04-21 10:11:32.965 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:11:32.965] 取消订单跳过，订单状态不符合，productId=1, status=0，可能原因：订单已被取消或回滚
+2026-04-21 10:11:32.968 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:11:32.968] 取消订单跳过，订单状态不符合，productId=2, status=0，可能原因：订单已被取消或回滚
+2026-04-21 10:11:32.968 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:11:32.968] 订单取消流程结束，结果：商品[1]订单已取消或回滚，当前状态：0
+商品[2]订单已取消或回滚，当前状态：0
+
+2026-04-21 10:33:26.992 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:33:26.992] 开始取消订单，platformId=PLATFORM_A, 商品种类数=2
+2026-04-21 10:33:27.265 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:33:27.265] 数据库状态更新成功，productId=1, 重试次数=0
+2026-04-21 10:33:27.265 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:33:27.265] 商品取消流程完成，productId=1
+2026-04-21 10:33:27.267 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:33:27.267] 取消订单跳过，订单状态不符合，productId=2, status=0，可能原因：订单已被取消或回滚
+2026-04-21 10:33:27.268 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419004] [2026-04-21 10:33:27.268] 订单取消流程结束，结果：商品[1]取消成功
+商品[2]订单已取消或回滚，当前状态：0
+
+2026-04-21 10:34:36.111 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419005] [2026-04-21 10:34:36.110] 开始取消订单，platformId=PLATFORM_A, 商品种类数=2
+2026-04-21 10:34:36.123 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419005] [2026-04-21 10:34:36.123] 数据库状态更新成功，productId=1, 重试次数=0
+2026-04-21 10:34:36.123 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419005] [2026-04-21 10:34:36.123] 商品取消流程完成，productId=1
+2026-04-21 10:34:36.132 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419005] [2026-04-21 10:34:36.132] 数据库状态更新成功，productId=2, 重试次数=0
+2026-04-21 10:34:36.132 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419005] [2026-04-21 10:34:36.132] 商品取消流程完成，productId=2
+2026-04-21 10:34:36.132 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419005] [2026-04-21 10:34:36.132] 订单取消流程结束，结果：商品[1]取消成功
+商品[2]取消成功
+
+2026-04-21 10:54:15.156 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-21 10:54:15.156] 开始消费 async:queue:deduct 队列，拉取 1 条消息
+2026-04-21 10:54:15.363 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419007] [2026-04-21 10:54:15.363] 更新幂等记录状态为: 成功
+2026-04-21 10:54:15.364 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-21 10:54:15.364] 消费 async:queue:deduct 队列完成，成功: 1, 失败(重试): 0, 丢弃: 0
+2026-04-21 10:55:03.137 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419007] [2026-04-21 10:55:03.137] 开始取消订单，platformId=PLATFORM_A, 商品种类数=1
+2026-04-21 10:55:03.150 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419007] [2026-04-21 10:55:03.150] 数据库状态更新成功，productId=999, 重试次数=0
+2026-04-21 10:55:03.156 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419007] [2026-04-21 10:55:03.156] 商品取消流程完成，productId=999
+2026-04-21 10:55:03.156 [http-nio-0.0.0.0-8080-exec-4] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419007] [2026-04-21 10:55:03.156] 订单取消流程结束，结果：商品[999]取消成功
+
+2026-04-21 11:03:23.985 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-21 11:03:23.985] 开始消费 async:queue:deduct 队列，拉取 1 条消息
+2026-04-21 11:03:24.188 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:ORD20260419008] [2026-04-21 11:03:24.188] 更新幂等记录状态为: 成功
+2026-04-21 11:03:24.189 [scheduling-1] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:order.mysql] [BizNo:SYSTEM] [2026-04-21 11:03:24.189] 消费 async:queue:deduct 队列完成，成功: 1, 失败(重试): 0, 丢弃: 0

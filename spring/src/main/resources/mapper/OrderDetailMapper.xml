@@ -76,9 +76,7 @@
         FROM order_detail
         WHERE order_no = #{orderNo}
           AND platform_id = #{platformId}
-        <if test="productId != null and productId != 0">
           AND product_id = #{productId}
-        </if>
     </select>
 
     <!-- 根据订单号、平台ID和商品ID更新状态为已取消（部分退货） -->
@@ -89,6 +87,7 @@
         WHERE order_no = #{orderNo}
           AND platform_id = #{platformId}
           AND product_id = #{productId}
+          AND status = 1
     </update>
 
 </mapper>

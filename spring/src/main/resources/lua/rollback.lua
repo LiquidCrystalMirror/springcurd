@@ -59,8 +59,20 @@ end
 -- 5. 清理幂等性标记（允许重新执行该业务操作）
 redis.call('DEL', idempotent_key)
 
--- 6. 记录回滚日志到异步队列
-local queue_msg = string.format('{"bizNo":"%s","platformId":"%s"}', biz_no, platform)
+-- 6. 构造回滚队列消息（包含商品明细和原始库存值）
+local items = {}
+for key, original_value in pairs(snapshot) do
+    table.insert(items, {
+        key = key,
+        quantity = tonumber(original_value)  -- 存储回滚前的原始库存值
+    })
+end
+
+local queue_msg = cjson.encode({
+    bizNo = biz_no,
+    platformId = platform,
+    items = items
+})
 redis.call('RPUSH', 'async:queue:rollback', queue_msg)
 
 -- 7. 返回成功结果

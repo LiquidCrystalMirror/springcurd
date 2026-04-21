@@ -295,6 +295,8 @@ public class LuaScriptManager {
                 args.add(bizNo);                                 // 业务单号
                 args.add(platformId);                            // 平台 ID
                 args.add(String.valueOf(scriptProperties.getTimeout())); // 超时时间
+                // 添加商品ID（取第一个商品的ID，因为cancel是单商品调用）
+                args.add(operations.keySet().iterator().next().toString()); // 商品ID
 
                 // 获取取消脚本路径
                 String scriptPath = scriptProperties.getPath().getCancel();
@@ -458,15 +460,12 @@ public class LuaScriptManager {
         private final boolean success;
         private final String code;
         private final String message;
-        private final String replenishNo;
         private final Map<Long, StockChange> changes;
 
-        public ReplenishResult(boolean success, String code, String message,
-                               String replenishNo, Map<Long, StockChange> changes) {
+        public ReplenishResult(boolean success, String code, String message, Map<Long, StockChange> changes) {
             this.success = success;
             this.code = code;
             this.message = message;
-            this.replenishNo = replenishNo;
             this.changes = changes;
         }
 
@@ -479,17 +478,15 @@ public class LuaScriptManager {
     }
 
     /**
-     * 执行补货（同步，无队列）
+     * 执行补货（重构版 - 无状态模式，天然防重）
      */
-    public ReplenishResult executeReplenish(String replenishNo, Map<Long, Integer> operations) {
+    public ReplenishResult executeReplenish(Map<Long, Integer> operations) {
         List<Object> keys = new ArrayList<>();
         List<Object> args = new ArrayList<>();
         for (Map.Entry<Long, Integer> e : operations.entrySet()) {
             keys.add("product:stock:" + e.getKey());
             args.add(e.getValue());  // 直接传递 Integer，让 Redisson 处理
         }
-        args.add(replenishNo);
-        args.add(scriptProperties.getTimeout());  // 直接传递 int，不要转字符串
 
         String scriptPath = scriptProperties.getPath().getReplenish();
         List<Object> result = execute(scriptPath, RScript.ReturnType.MULTI, keys, args.toArray());
@@ -497,19 +494,18 @@ public class LuaScriptManager {
     }
 
     private ReplenishResult parseReplenishResult(List<Object> result) {
-        if (result == null || result.size() < 3) {
-            return new ReplenishResult(false, "INVALID_RESULT", "脚本返回异常", null, null);
+        if (result == null || result.size() < 2) {
+            return new ReplenishResult(false, "INVALID_RESULT", "脚本返回异常", null);
         }
         int status = Integer.parseInt(String.valueOf(result.get(0)));
         String message = String.valueOf(result.get(1));
-        String replenishNo = result.size() > 2 ? String.valueOf(result.get(2)) : null;
 
         if (status == 1) {
             Map<Long, ReplenishResult.StockChange> changes = new HashMap<>();
-            if (result.size() > 3 && !"{}".equals(String.valueOf(result.get(3)))) {
+            if (result.size() > 2 && !"{}".equals(String.valueOf(result.get(2)))) {
                 try {
                     Map<String, Map<String, Integer>> raw = objectMapper.readValue(
-                            String.valueOf(result.get(3)),
+                            String.valueOf(result.get(2)),
                             new TypeReference<Map<String, Map<String, Integer>>>() {});
                     for (Map.Entry<String, Map<String, Integer>> e : raw.entrySet()) {
                         Long pid = Long.parseLong(e.getKey().substring(e.getKey().lastIndexOf(':') + 1));
@@ -517,13 +513,13 @@ public class LuaScriptManager {
                                 e.getValue().get("before"), e.getValue().get("after")));
                     }
                 } catch (Exception e) {
-                    StructuredLogger.error(REPLENISH_REDIS, replenishNo != null ? replenishNo : "UNKNOWN", 
+                    StructuredLogger.error(REPLENISH_REDIS, "UNKNOWN", 
                             "解析补货结果失败，可能原因：JSON格式不正确或数据结构异常", e);
                 }
             }
-            return new ReplenishResult(true, "SUCCESS", message, replenishNo, changes);
+            return new ReplenishResult(true, "SUCCESS", message, changes);
         } else {
-            return new ReplenishResult(false, message, message, replenishNo, null);
+            return new ReplenishResult(false, message, message, null);
         }
     }
 }

@@ -5,30 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b006ce6-2592-4a26-9466-b61ece38613e" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/StockScriptProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/StockScriptProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API测试用例.md" beforeDir="false" afterPath="$PROJECT_DIR$/API测试用例.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/order.mysql/order.mysql.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/order.redis/order.redis.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ApiResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ApiResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/OrderDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ProductStockDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/OrderDetailMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/OrderDetailMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/OrderDetailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/OrderDetailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/StockReplenishLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/StockReplenishLog.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderDetailServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderDetailServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderProcessingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderProcessingServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/ReplenishServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/ReplenishServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/LuaScriptManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/LuaScriptManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/batch_deduct.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/batch_deduct.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/cancel.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/cancel.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/replenish.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/replenish.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/DeptMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/DeptMapper.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/OrderDetailMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/OrderDetailMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock.sql" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/stock.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vue/src/request/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/request/request.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/StockReplenishLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/StockReplenishLogMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock_replenish_log.sql" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/stock_replenish_log.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -234,6 +230,12 @@
       <workItem from="1776580394186" duration="2692000" />
       <workItem from="1776593535007" duration="8955000" />
       <workItem from="1776605231933" duration="23000" />
+      <workItem from="1776607981480" duration="659000" />
+      <workItem from="1776610553314" duration="701000" />
+      <workItem from="1776649919950" duration="6868000" />
+      <workItem from="1776671296361" duration="3947000" />
+      <workItem from="1776683028481" duration="896000" />
+      <workItem from="1776735876141" duration="6408000" />
     </task>
     <servers />
   </component>

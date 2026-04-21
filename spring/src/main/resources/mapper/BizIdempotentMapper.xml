@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.springbootdemo.mapper.BizIdempotentMapper">
+
+    <!-- 插入幂等记录 -->
+    <insert id="insert">
+        INSERT INTO biz_idempotent (biz_no, op_type, platform_id, status, create_time, update_time)
+        VALUES (#{bizNo}, #{opType}, #{platformId}, #{status}, NOW(), NOW())
+    </insert>
+
+    <!-- 查询幂等记录状态 -->
+    <select id="selectStatus" resultType="java.lang.Integer">
+        SELECT status
+        FROM biz_idempotent
+        WHERE biz_no = #{bizNo}
+          AND op_type = #{opType}
+          AND platform_id = #{platformId}
+    </select>
+
+    <!-- 更新幂等记录状态 -->
+    <update id="updateStatus">
+        UPDATE biz_idempotent
+        SET status = #{status},
+            update_time = NOW()
+        WHERE biz_no = #{bizNo}
+          AND op_type = #{opType}
+          AND platform_id = #{platformId}
+    </update>
+
+</mapper>
