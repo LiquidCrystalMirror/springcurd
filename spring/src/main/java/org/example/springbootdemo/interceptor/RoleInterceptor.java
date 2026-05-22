@@ -26,7 +26,7 @@ public class RoleInterceptor implements HandlerInterceptor {
         Byte roleId = currentUser.getRoleId();
 
         // 根据路径判断需要的权限
-        if (uri.contains("/updateUsers") || uri.contains("/delete")) {
+        if (uri.contains("/updateUsers") || uri.contains("/delete") || uri.contains("/admin/stock/replenish")) {
             // 需要管理员权限（roleId = 1）
             if (roleId == null || roleId != 1) {
                 throw new RuntimeException("权限不足，只有管理员可以执行此操作");

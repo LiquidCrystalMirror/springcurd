@@ -3,11 +3,14 @@ package org.example.springbootdemo.service.imp;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.example.springbootdemo.config.TestModeContext;
 import org.example.springbootdemo.dto.ApiResult;
 import org.example.springbootdemo.dto.ReplenishDTO;
 import org.example.springbootdemo.dto.ReplenishItemDTO;
+import org.example.springbootdemo.entity.Product;
 import org.example.springbootdemo.entity.ProductStock;
 import org.example.springbootdemo.entity.StockReplenishLog;
+import org.example.springbootdemo.mapper.ProductMapper;
 import org.example.springbootdemo.mapper.ProductStockMapper;
 import org.example.springbootdemo.mapper.StockReplenishLogMapper;
 import org.example.springbootdemo.service.ReplenishService;
@@ -32,9 +35,47 @@ public class ReplenishServiceImpl implements ReplenishService {
     private StockReplenishLogMapper replenishLogMapper;
     @Resource
     private ProductStockMapper productStockMapper;
+    @Resource
+    private ProductMapper productMapper;
 
     @Override
     public ApiResult<ReplenishVO> replenish(ReplenishDTO dto) {
+        // 0. 验证商品名称（如果前端传入了商品名称）
+        ApiResult<Void> validationError = validateProductNames(dto.getItems());
+        if (validationError != null) {
+            return ApiResult.error(validationError.getCode(), validationError.getMessage());
+        }
+        
+        // 提取商品ID到名称的映射，供后续创建商品时使用
+        Map<Long, String> productNameMap = new HashMap<>();
+        for (ReplenishItemDTO item : dto.getItems()) {
+            if (item.getProductName() != null && !item.getProductName().isEmpty()) {
+                productNameMap.put(item.getProductId(), item.getProductName());
+            }
+        }
+        
+        // 检查是否为测试模式
+        if (TestModeContext.isTestMode()) {
+            StructuredLogger.info(REPLENISH_REDIS, "SYSTEM", 
+                    "【测试模式】补货请求，不执行Redis和数据库操作");
+            
+            // 聚合数量
+            Map<Long, Integer> operations = new HashMap<>();
+            for (ReplenishItemDTO item : dto.getItems()) {
+                operations.merge(item.getProductId(), item.getQuantity(), Integer::sum);
+            }
+            
+            // 生成模拟批次ID
+            Long batchId = IdWorker.getId();
+            
+            // 返回模拟结果
+            ReplenishVO mockVO = new ReplenishVO();
+            mockVO.setId(batchId);
+            mockVO.setOperations(operations);
+            
+            return ApiResult.success(mockVO);
+        }
+        
         // 1. 聚合数量
         Map<Long, Integer> operations = new HashMap<>();
         for (ReplenishItemDTO item : dto.getItems()) {
@@ -79,7 +120,8 @@ public class ReplenishServiceImpl implements ReplenishService {
             if (change != null) {
                 log.setStockBefore(change.getBefore());
                 log.setStockAfter(change.getAfter());
-                updateProductStock(e.getKey(), change.getAfter());
+                String productName = productNameMap.get(e.getKey());
+                updateProductStock(e.getKey(), change.getAfter(), productName);
             }
             logs.add(log);
         }
@@ -110,7 +152,7 @@ public class ReplenishServiceImpl implements ReplenishService {
 
         if (!dbOk) {
             StructuredLogger.error(REPLENISH_MYSQL, "BATCH-" + batchId, 
-                    "【严重】补货日志最终写入失败，Redis已增加但数据库未记录，需人工介入。");
+                    "【严重错误-需人工介入】补货审计日志最终写入失败，Redis已增加但数据库未记录，数据不一致风险！请立即检查并手动修复。可能原因：数据库连接永久断开或唯一约束持续冲突。");
         }
 
         ReplenishVO vo = new ReplenishVO();
@@ -125,12 +167,15 @@ public class ReplenishServiceImpl implements ReplenishService {
      * 更新商品库存（不存在则创建）
      * @param productId 商品ID
      * @param newStock 新库存值
+     * @param productName 商品名称（可选，用于新建商品时）
      */
-    private void updateProductStock(Long productId, int newStock) {
+    private void updateProductStock(Long productId, int newStock, String productName) {
         ProductStock stock = productStockMapper.queryById(productId);
         if (stock == null) {
             StructuredLogger.info(REPLENISH_MYSQL, "SYSTEM",
                     "商品库存记录不存在，自动创建新记录，productId={}, stock={}", productId, newStock);
+            
+            // 1. 先创建 product_stock 记录（因为 product 表有外键依赖）
             stock = new ProductStock();
             stock.setProductId(productId);
             stock.setStock(newStock);
@@ -138,7 +183,26 @@ public class ReplenishServiceImpl implements ReplenishService {
             stock.setUpdateTime(LocalDateTime.now());
             productStockMapper.insert(stock);
             StructuredLogger.info(REPLENISH_MYSQL, "SYSTEM",
-                    "商品库存记录创建成功，productId={}", productId);
+                    "商品库存记录创建成功，productId={}, stock={}", productId, newStock);
+            
+            // 2. 检查并创建 product 记录（如果不存在）
+            Product product = productMapper.queryById(productId);
+            if (product == null) {
+                StructuredLogger.info(REPLENISH_MYSQL, "SYSTEM",
+                        "商品信息不存在，自动创建新商品记录，productId={}", productId);
+                
+                Product newProduct = new Product();
+                newProduct.setProductId(productId);
+                // 使用前端传入的商品名称，如果没有则使用默认名称
+                String finalProductName = (productName != null && !productName.isEmpty()) 
+                        ? productName : "商品_" + productId;
+                newProduct.setProductName(finalProductName);
+                productMapper.insert(newProduct);
+                
+                StructuredLogger.info(REPLENISH_MYSQL, "SYSTEM",
+                        "商品信息创建成功，productId={}, productName={}", productId, finalProductName);
+            }
+            
             return;
         }
 
@@ -172,7 +236,55 @@ public class ReplenishServiceImpl implements ReplenishService {
             }
         }
         StructuredLogger.error(REPLENISH_MYSQL, "SYSTEM",
-                "乐观锁重试失败，productId={}，可能原因：高并发场景下持续冲突", productId);
+                "【严重错误-需人工介入】补货时库存备份表更新最终失败（已重试{}次），productId={}，数据不一致风险！请立即检查并手动修复。可能原因：高并发场景下持续冲突",
+                maxRetries, productId);
         throw new RuntimeException("乐观锁重试失败，productId=" + productId);
+    }
+    
+    /**
+     * 验证商品名称是否与数据库一致
+     * @param items 补货商品列表
+     * @return 如果有错误返回 ApiResult.error，否则返回 null
+     */
+    private ApiResult<Void> validateProductNames(List<ReplenishItemDTO> items) {
+        if (items == null || items.isEmpty()) {
+            return null;
+        }
+        
+        Map<Long, String> invalidProducts = new HashMap<>();
+        
+        for (ReplenishItemDTO item : items) {
+            Long productId = item.getProductId();
+            String productName = item.getProductName();
+            
+            // 如果前端传入了商品名称，需要验证
+            if (productName != null && !productName.isEmpty()) {
+                Product product = productMapper.queryById(productId);
+                
+                if (product == null) {
+                    // 商品不存在，允许补货（会自动创建）
+                    StructuredLogger.info(REPLENISH_REDIS, "SYSTEM",
+                            "商品不存在，将在补货时自动创建，productId={}, productName={}", productId, productName);
+                } else if (!productName.equals(product.getProductName())) {
+                    // 商品名称不匹配，记录错误
+                    invalidProducts.put(productId, product.getProductName());
+                    StructuredLogger.warn(REPLENISH_REDIS, "SYSTEM",
+                            "商品名称不匹配，输入：{}，数据库：{}，productId={}",
+                            productName, product.getProductName(), productId);
+                }
+            }
+        }
+        
+        // 如果有商品名称不匹配，返回错误
+        if (!invalidProducts.isEmpty()) {
+            StringBuilder errorMsg = new StringBuilder("以下商品名称与数据库不一致：");
+            for (Map.Entry<Long, String> entry : invalidProducts.entrySet()) {
+                errorMsg.append("\n商品ID: ").append(entry.getKey())
+                        .append(", 数据库中的名称: ").append(entry.getValue());
+            }
+            return ApiResult.error(400, errorMsg.toString());
+        }
+        
+        return null;
     }
 }

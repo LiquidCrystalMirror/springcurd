@@ -314,7 +314,8 @@ public class StockPersistenceConsumer {
             }
         }
         StructuredLogger.error(ORDER_MYSQL, "SYSTEM", 
-                "乐观锁重试失败，productId={}，可能原因：高并发场景下持续冲突", productId);
+                "【严重错误-需人工介入】订单持久化时库存备份表更新最终失败（已重试{}次），productId={}，数据不一致风险！请立即检查并手动修复。可能原因：高并发场景下持续冲突",
+                maxRetries, productId);
         throw new RuntimeException("乐观锁重试失败，productId=" + productId);
     }
 

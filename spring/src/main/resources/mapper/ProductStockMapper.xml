@@ -8,28 +8,31 @@
         <result property="stock" column="stock" jdbcType="INTEGER"/>
         <result property="version" column="version" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="productName" column="product_name" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- 根据主键查询（与 BaseMapper.selectById 重复，但保留以匹配 Service 调用） -->
     <select id="queryById" resultMap="BaseResultMap">
-        SELECT product_id, stock, version, update_time
-        FROM product_stock
-        WHERE product_id = #{id}
+        SELECT ps.product_id, ps.stock, ps.version, ps.update_time, p.product_name
+        FROM product_stock ps
+        LEFT JOIN product p ON ps.product_id = p.product_id
+        WHERE ps.product_id = #{id}
     </select>
 
     <!-- 分页查询 -->
     <select id="find" resultMap="BaseResultMap" parameterType="org.example.springbootdemo.query.ProductStockQuery">
-        SELECT product_id, stock, version, update_time
-        FROM product_stock
+        SELECT ps.product_id, ps.stock, ps.version, ps.update_time, p.product_name
+        FROM product_stock ps
+        LEFT JOIN product p ON ps.product_id = p.product_id
         <where>
             <if test="productId != null">
-                AND product_id = #{productId}
+                AND ps.product_id = #{productId}
             </if>
             <if test="stock != null">
-                AND stock = #{stock}
+                AND ps.stock = #{stock}
             </if>
         </where>
-        ORDER BY product_id
+        ORDER BY ps.product_id
     </select>
 
     <!-- 插入（注意：product_id 由业务传入，非自增） -->

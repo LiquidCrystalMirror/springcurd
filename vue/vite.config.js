@@ -22,6 +22,14 @@ export default defineConfig({
         target:'http://localhost:8080',
         changeOrigin:true,
         rewrite: (path) => path.replace(/^\/dashboard/, '/dashboard')
+      },
+      '/orders':{
+        target:'http://localhost:8080',
+        changeOrigin:true
+      },
+      '/admin/stock':{
+        target:'http://localhost:8080',
+        changeOrigin:true
       }
     }
   },

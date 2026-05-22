@@ -34,6 +34,24 @@ let routes=[
         component:()=>import('@/views/dept/ListView.vue'),
         meta: { requiresAuth: true }
       },
+      {
+        path:'/dashboard/stock',
+        name:'stock',
+        component:()=>import('@/views/stock/ListView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path:'/dashboard/orders',
+        name:'orders',
+        component:()=>import('@/views/orders/ListView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path:'/dashboard/api-tester',
+        name:'apiTester',
+        component:()=>import('@/views/ApiTester.vue'),
+        meta: { requiresAuth: true }
+      }
     ]
   }
 ]

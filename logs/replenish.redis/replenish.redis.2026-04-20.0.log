@@ -1,0 +1,12 @@
+2026-04-20 15:50:16.496 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 15:50:16.496] 开始执行补货操作，商品种类数=3
+2026-04-20 15:50:16.525 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 15:50:16.525] 补货Redis操作成功，商品种类数=3（不存在的商品已自动初始化）
+2026-04-20 15:54:09.626 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 15:54:09.626] 开始执行补货操作，商品种类数=3
+2026-04-20 15:54:09.626 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 15:54:09.626] 补货Redis操作成功，商品种类数=3（不存在的商品已自动初始化）
+2026-04-20 16:23:51.726 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 16:23:51.726] 开始执行补货操作，商品种类数=3
+2026-04-20 16:23:51.733 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 16:23:51.733] 补货Redis操作成功，商品种类数=3（不存在的商品已自动初始化）
+2026-04-20 16:31:29.961 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 16:31:29.961] 开始执行补货操作，商品种类数=3
+2026-04-20 16:31:29.992 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 16:31:29.992] 补货Redis操作成功，商品种类数=3（不存在的商品已自动初始化）
+2026-04-20 16:41:58.737 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 16:41:58.737] 开始执行补货操作，商品种类数=3
+2026-04-20 16:41:58.769 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:REP20260419001] [2026-04-20 16:41:58.769] 补货Redis操作成功，商品种类数=3（不存在的商品已自动初始化）
+2026-04-20 19:17:51.404 [http-nio-0.0.0.0-8080-exec-2] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:BATCH-2046186579017392130] [2026-04-20 19:17:51.404] 开始执行补货操作，商品种类数=3
+2026-04-20 19:18:20.410 [http-nio-0.0.0.0-8080-exec-3] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:BATCH-2046186700664791042] [2026-04-20 19:18:20.410] 开始执行补货操作，商品种类数=3

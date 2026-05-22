@@ -42,7 +42,7 @@
             :collapse="isCollapse"
             active-text-color="#409EFF"
             background-color="#304156"
-            default-active="/dashboard/user"
+            :default-active="activeMenu"
             text-color="#bfcbd9"
             :router="true"
             style="border: none;"
@@ -61,6 +61,32 @@
               <span>部门管理</span>
             </el-menu-item>
           </el-sub-menu>
+          
+          <el-sub-menu index="2">
+            <template #title>
+              <el-icon><Document /></el-icon>
+              <span>业务管理</span>
+            </template>
+            <el-menu-item index="/dashboard/orders">
+              <el-icon><Document /></el-icon>
+              <span>订单管理</span>
+            </el-menu-item>
+            <el-menu-item index="/dashboard/stock">
+              <el-icon><Box /></el-icon>
+              <span>库存管理</span>
+            </el-menu-item>
+          </el-sub-menu>
+          
+          <el-sub-menu index="3">
+            <template #title>
+              <el-icon><Tools /></el-icon>
+              <span>开发工具</span>
+            </template>
+            <el-menu-item index="/dashboard/api-tester">
+              <el-icon><Tools /></el-icon>
+              <span>API 测试</span>
+            </el-menu-item>
+          </el-sub-menu>
         </el-menu>
       </el-aside>
 
@@ -74,6 +100,7 @@
 
 <script setup>
 import {computed, onMounted, ref} from "vue";
+import { useRoute } from 'vue-router';
 import { ElMessage } from "element-plus";
 import router from "@/router/index.js";
 import authService from "@/service/AuthService.js";
@@ -85,12 +112,20 @@ import {
   User,
   OfficeBuilding,
   ArrowDown,
-  SwitchButton
+  SwitchButton,
+  Document,
+  Box,
+  Tools
 } from '@element-plus/icons-vue';
 
-
+const route = useRoute();
 
 const isCollapse = ref(false)
+
+// 动态计算当前激活的菜单项（解决刷新后菜单高亮不一致的问题）
+const activeMenu = computed(() => {
+  return route.path
+})
 
 // 获取用户信息
 const user = computed(() => authService.getUser())

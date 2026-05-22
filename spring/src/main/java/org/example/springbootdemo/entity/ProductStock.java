@@ -16,4 +16,9 @@ public class ProductStock {
     @Version
     private Integer version;
     private LocalDateTime updateTime;
+    
+    /**
+     * 商品名称（非数据库字段，通过关联查询获取）
+     */
+    private String productName;
 }

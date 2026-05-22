@@ -6,25 +6,33 @@
   <component name="ChangeListManager">
     <list default="true" id="9b006ce6-2592-4a26-9466-b61ece38613e" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API测试用例.md" beforeDir="false" afterPath="$PROJECT_DIR$/API测试用例.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/order.mysql/order.mysql.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/order.redis/order.redis.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring.md" beforeDir="false" afterPath="$PROJECT_DIR$/spring.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/QueueConsumerProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/QueueConsumerProperties.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/StockReplenishLog.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/StockReplenishLog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/StockManageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/StockManageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishItemDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/ProductStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/ProductStock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/RoleInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/RoleInterceptor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderProcessingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderProcessingServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/ReplenishServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/ReplenishServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/LuaScriptManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/LuaScriptManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishVO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/cancel.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/cancel.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/replenish.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/replenish.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/OrderDetailMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/OrderDetailMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/StockReplenishLogMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/StockReplenishLogMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock_replenish_log.sql" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/stock_replenish_log.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/User.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/biz_idempotent.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/logback-spring.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/ProductStockMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/ProductStockMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock_replenish_log.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/api/UserApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/UserApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Dashboard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/vite.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,10 +42,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Vue Options API Component" />
-        <option value="JavaScript File" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Vue Options API Component" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -89,7 +97,7 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.4816092&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;,
     &quot;ts.external.directory.path&quot;: &quot;E:\\ideal\\IntelliJ IDEA 2024.1.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -235,7 +243,24 @@
       <workItem from="1776649919950" duration="6868000" />
       <workItem from="1776671296361" duration="3947000" />
       <workItem from="1776683028481" duration="896000" />
-      <workItem from="1776735876141" duration="6408000" />
+      <workItem from="1776735876141" duration="7843000" />
+      <workItem from="1776752113478" duration="7470000" />
+      <workItem from="1776778202699" duration="609000" />
+      <workItem from="1776820488678" duration="8790000" />
+      <workItem from="1776907307284" duration="11591000" />
+      <workItem from="1776920316590" duration="175000" />
+      <workItem from="1776928989580" duration="2632000" />
+      <workItem from="1777015654304" duration="2726000" />
+      <workItem from="1778227613734" duration="23000" />
+      <workItem from="1778339574254" duration="70000" />
+      <workItem from="1779286612028" duration="157000" />
+      <workItem from="1779287183274" duration="59000" />
+      <workItem from="1779287540246" duration="39000" />
+      <workItem from="1779287635147" duration="20000" />
+      <workItem from="1779288358146" duration="27000" />
+      <workItem from="1779288411666" duration="12000" />
+      <workItem from="1779288607882" duration="26000" />
+      <workItem from="1779288659659" duration="16000" />
     </task>
     <servers />
   </component>

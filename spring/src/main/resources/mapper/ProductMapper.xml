@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.springbootdemo.mapper.ProductMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="org.example.springbootdemo.entity.Product">
+        <id property="productId" column="product_id" jdbcType="BIGINT"/>
+        <result property="productName" column="product_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 根据商品ID查询 -->
+    <select id="queryById" resultMap="BaseResultMap">
+        SELECT product_id, product_name
+        FROM product
+        WHERE product_id = #{productId}
+    </select>
+
+    <!-- 插入商品信息 -->
+    <insert id="insert" parameterType="org.example.springbootdemo.entity.Product">
+        INSERT INTO product (product_id, product_name)
+        VALUES (#{productId}, #{productName})
+    </insert>
+
+    <!-- 更新商品信息 -->
+    <update id="update" parameterType="org.example.springbootdemo.entity.Product">
+        UPDATE product
+        SET product_name = #{productName}
+        WHERE product_id = #{productId}
+    </update>
+
+    <!-- 删除商品信息 -->
+    <delete id="deleteById">
+        DELETE FROM product WHERE product_id = #{productId}
+    </delete>
+
+</mapper>

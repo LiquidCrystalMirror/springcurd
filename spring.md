@@ -21,6 +21,15 @@
 - 中小型电商秒杀、抢购活动的库存模块原型
 - 分布式系统学习案例
 
+### 1.3 核心业务模块
+
+本项目包含四大核心业务模块：
+
+1. **用户管理模块**：注册、登录、JWT认证、角色权限控制
+2. **订单管理模块**：创建订单（扣减库存）、取消订单（恢复库存）
+3. **库存管理模块**：库存查询、商品补货（支持新商品自动创建）
+4. **数据看板模块**：用户列表、订单列表、库存列表的统一查询接口
+
 ---
 
 ## 二、系统架构设计
@@ -125,16 +134,24 @@ org.example.springbootdemo
 │       ├── ScriptConstant.java
 │       └── UserStatus.java
 ├── controller                  # 接口层
-│   ├── DashBoardController.java
-│   └── UserController.java
+│   ├── DashBoardController.java      # 数据看板（统一查询）
+│   ├── OrderController.java          # 订单管理 ★
+│   ├── StockManageController.java    # 库存管理（补货）★
+│   └── UserController.java           # 用户管理
 ├── dto                         # 数据传输对象
 │   ├── ApiResult.java
 │   ├── DeptDTO.java
 │   ├── LoginResponse.java
+│   ├── OrderDTO.java                 # 订单请求DTO ★
+│   ├── ReplenishDTO.java             # 补货请求DTO ★
+│   ├── ReplenishItemDTO.java         # 补货商品项DTO ★
+│   ├── StockDTO.java                 # 库存查询DTO ★
 │   └── UserDTO.java
 ├── entity                      # 实体类（对应数据库表）
 │   ├── OrderDetail.java
-│   └── ProductStock.java
+│   ├── ProductStock.java
+│   ├── Product.java                  # 商品信息表 ★
+│   └── StockReplenishLog.java        # 补货审计日志表 ★
 ├── exception                   # 全局异常处理
 │   └── GlobalExceptionHandler.java
 ├── interceptor                 # 拦截器（认证、权限）
@@ -144,6 +161,8 @@ org.example.springbootdemo
 │   ├── DeptMapper.java
 │   ├── OrderDetailMapper.java
 │   ├── ProductStockMapper.java
+│   ├── ProductMapper.java            # 商品Mapper ★
+│   ├── StockReplenishLogMapper.java  # 补货日志Mapper ★
 │   └── UserMapper.java
 ├── model                       # 业务模型（非持久化）
 │   └── OrderItem.java
@@ -157,18 +176,24 @@ org.example.springbootdemo
 │   ├── DeptService.java
 │   ├── OrderDetailService.java
 │   ├── ProductStockService.java
-│   ├── StockPersistenceConsumer.java   # 队列消费者
+│   ├── ReplenishService.java         # 补货服务接口 ★
+│   ├── StockPersistenceConsumer.java # 队列消费者
 │   ├── UserService.java
 │   └── imp/
 │       ├── DeptServiceImpl.java
 │       ├── OrderDetailServiceImpl.java
+│       ├── OrderProcessingServiceImpl.java  # 订单处理核心逻辑 ★
 │       ├── ProductStockServiceImpl.java
+│       ├── ReplenishServiceImpl.java        # 补货服务实现 ★
 │       └── UserServiceImpl.java
 ├── util                        # 工具类
 │   ├── JwtUtil.java
 │   ├── LuaScriptManager.java   # Lua脚本统一管理器 ★
-│   └── PasswordUtil.java
+│   ├── PasswordUtil.java
+│   └── StructuredLogger.java   # 结构化日志工具 ★
 ├── vo                          # 视图对象（返回前端）
+│   ├── OrderVO.java            # 订单响应VO ★
+│   ├── ReplenishVO.java        # 补货响应VO ★
 │   └── UserVO.java
 └── SpringBootDemoApplication.java
 ```
@@ -177,11 +202,15 @@ org.example.springbootdemo
 
 | 类名                       | 核心职责                                                     |
 | -------------------------- | ------------------------------------------------------------ |
-| `LuaScriptManager`         | 加载、缓存、执行 Redis Lua 脚本；封装批量操作、回滚、查询、取消等接口；返回统一 `BatchResult` |
-| `StockPersistenceConsumer` | 定时从 Redis List 拉取消息，将库存变更持久化到 MySQL（订单明细 + 库存备份表） |
+| `LuaScriptManager`         | 加载、缓存、执行 Redis Lua 脚本；封装批量操作、回滚、查询、取消等接口；返回统一 `BatchResult`；**带重试机制** |
+| `StockPersistenceConsumer` | 定时从 Redis List 拉取消息，将库存变更持久化到 MySQL（订单明细 + 库存备份表）；**支持数据库幂等性检查** |
+| `OrderProcessingServiceImpl` | 订单处理核心业务逻辑；**支持全额取消校验、同步更新product_stock、部分失败容忍、商品级幂等性** |
+| `ReplenishServiceImpl`     | **补货服务核心实现**：校验商品名称一致性、Redis原子增加库存、同步更新MySQL（product_stock + product）、自动生成新商品记录、写入补货审计日志；**带重试机制和人工介入告警** |
 | `GlobalExceptionHandler`   | 统一处理各类异常，返回标准 `ApiResult` 格式                  |
 | `JwtAuthInterceptor`       | 校验请求头 `Authorization` 中的 Bearer Token，提取用户信息存入 `request` 属性 |
-| `RoleInterceptor`          | 基于用户角色进行接口级权限控制（如管理员才可更新用户）       |
+| `RoleInterceptor`          | 基于用户角色进行接口级权限控制（如管理员才可补货、更新用户） |
+| `StructuredLogger`         | **结构化日志系统**：按业务类别（ORDER_MYSQL、ORDER_REDIS、REPLENISH_MYSQL、REPLENISH_REDIS等）路由到不同日志文件，便于问题定位 |
+| `ResponseTimeInterceptor`  | **性能监控拦截器**：记录订单相关请求的响应时间，开发时使用，生产环境可禁用 |
 
 ---
 
@@ -226,19 +255,44 @@ org.example.springbootdemo
 | id   | BIGINT  | 部门ID   |
 | name | VARCHAR | 部门名称 |
 
+### 5.5 商品表 `product` ★
+
+| 字段         | 类型        | 描述                                |
+| ------------ | ----------- | ----------------------------------- |
+| product_id   | BIGINT      | 商品ID（主键，外键关联 product_stock） |
+| product_name | VARCHAR(255) | 商品名称                            |
+
+**重要约束**：
+- `product_id` 是外键，引用 `product_stock.product_id`
+- **必须先插入 product_stock，再插入 product**
+
+### 5.6 补货审计日志表 `stock_replenish_log` ★
+
+| 字段         | 类型     | 描述                              |
+| ------------ | -------- | --------------------------------- |
+| id           | BIGINT   | 批次ID（雪花算法，联合主键之一）   |
+| product_id   | BIGINT   | 商品ID（联合主键之一）             |
+| quantity     | INT      | 补货数量                          |
+| stock_before | INT      | 补货前库存                        |
+| stock_after  | INT      | 补货后库存                        |
+| status       | TINYINT  | 状态：1-成功                      |
+| create_time  | DATETIME | 创建时间                          |
+
+**联合主键**：`(id, product_id)` 防止重复插入
+
 ---
 
 ## 六、Redis 数据结构与 Key 设计
 
-| Key 模式                          | 数据类型      | 用途                                  | 示例                               |
-| --------------------------------- | ------------- | ------------------------------------- | ---------------------------------- |
-| `product:stock:{productId}`       | String        | 商品实时库存                          | `product:stock:1001` → `500`       |
-| `biz:idempotent:{opType}:{bizNo}` | String        | 幂等标记（processing/success/failed） | `biz:idempotent:deduct:ORD2024001` |
-| `biz:snapshot:{opType}:{bizNo}`   | String (JSON) | 操作前库存快照，用于回滚              | `biz:snapshot:deduct:ORD2024001`   |
-| `cancel:idempotent:{bizNo}`       | String        | 取消操作的幂等标记                    | `cancel:idempotent:ORD2024001`     |
-| `async:queue:deduct`              | List          | 扣减异步队列                          | 元素为 JSON 格式的队列消息         |
-| `async:queue:add`                 | List          | 增加（如退货）异步队列                |                                    |
-| `async:queue:rollback`            | List          | 回滚异步队列                          |                                    |
+| Key 模式                              | 数据类型      | 用途                                  | 示例                               |
+| ------------------------------------- | ------------- | ------------------------------------- | ---------------------------------- |
+| `product:stock:{productId}`           | String        | 商品实时库存                          | `product:stock:1001` → `500`       |
+| `biz:idempotent:{opType}:{bizNo}`     | String        | 幂等标记（processing/success/failed） | `biz:idempotent:deduct:ORD2024001` |
+| `biz:snapshot:{opType}:{bizNo}`       | String (JSON) | 操作前库存快照，用于回滚              | `biz:snapshot:deduct:ORD2024001`   |
+| `cancel:idempotent:{bizNo}:{productId}` | String      | **取消操作的幂等标记（商品级）**      | `cancel:idempotent:ORD2024001:1001`|
+| `async:queue:deduct`                  | List          | 扣减异步队列                          | 元素为 JSON 格式的队列消息         |
+| `async:queue:add`                     | List          | 增加（如补货）异步队列                |                                    |
+| `async:queue:rollback`                | List          | 回滚异步队列                          |                                    |
 
 ---
 
@@ -253,8 +307,11 @@ org.example.springbootdemo
 - 原子执行 `DECRBY` / `INCRBY`
 - 幂等控制，避免重复执行
 - 执行成功后推送消息到 `async:queue:{opType}`
+- **如果 key 不存在，返回错误（不会自动创建）**
 
 **返回值**：`[状态码, 消息, bizNo, snapshotKey]`
+- 状态码：1-成功，0-失败
+- 消息：`success` / `already_success` / `already_failed` / `key_not_found` / `insufficient_value`
 
 ### 7.2 `rollback.lua` —— 通用回滚
 
@@ -273,18 +330,26 @@ org.example.springbootdemo
 ### 7.4 `cancel.lua` —— 取消订单库存恢复 ★
 
 **功能**：
-- 原子增加指定商品库存
-- 独立幂等标记 `cancel:idempotent:{bizNo}`
-- **不保存快照，不发送队列**（依赖定时对账最终一致）
+- 原子增加指定商品库存（支持批量）
+- **每个订单的每个商品独立幂等**（key: `cancel:idempotent:{bizNo}:{productId}`）
+- **不保存快照，不发送队列**（依赖同步更新MySQL保证一致性）
+- 带重试机制（最多3次），确保补偿操作成功
 
 **参数**：
-- KEYS：商品库存 key 列表
-- ARGV[1..N]：对应增加数量
+- KEYS：商品库存 key 列表（如 `product:stock:1`）
+- ARGV[1..N]：对应每个 key 的增加数量
 - ARGV[N+1]：订单号 bizNo
 - ARGV[N+2]：平台 ID
-- ARGV[N+3]：超时时间
+- ARGV[N+3]：超时时间（秒）
+- ARGV[N+4]：**商品ID**（用于构建幂等性key）
 
 **返回值**：`[状态码, 消息, bizNo]`
+- 状态码：1-成功，0-失败
+- 消息：`success` / `already_success` / `already_failed`
+
+**重要改进**：
+- ✅ 幂等性key从订单级细化到商品级，避免同一订单多商品取消时误拦截
+- ✅ Java层调用时带重试机制（指数退避），确保Redis恢复成功
 
 ---
 
@@ -306,18 +371,32 @@ org.example.springbootdemo
 10. 定时对账任务（未在代码中展示，可扩展）定期对比 Redis 与 MySQL 库存，修正差异
 ```
 
-### 8.2 取消订单恢复库存流程
+### 8.2 取消订单恢复库存流程（同步更新）★
 
 ```
-1. 前端请求取消订单（订单号 orderNo, 平台ID）
-2. Service 查询 MySQL 确认订单存在且状态可取消
-3. 更新 order_detail 状态为“已取消”（status=0）
-4. 构造恢复映射 Map<String, Integer>（商品 key → 数量）
-5. 调用 LuaScriptManager.executeCancel(orderNo, platformId, map)
-6. Lua 脚本执行：
-   - 幂等检查 → 原子增加库存 → 标记成功
-7. 返回成功，流程结束（无需发队列，对账任务后续同步备份表）
+1. 前端请求取消订单（订单号 orderNo, 平台ID, 商品列表）
+2. Service 验证参数并合并相同商品数量
+3. 遍历每个商品，逐个执行取消流程：
+   a. 查询 MySQL order_detail 确认订单存在且状态为“正常”（status=1）
+   b. 验证取消数量等于购买数量（只支持全额取消）
+   c. 调用 LuaScriptManager.executeCancel() 回滚 Redis 库存
+      - Lua脚本：幂等检查 → 原子增加库存 → 标记成功
+      - 带3次重试机制，确保Redis操作成功
+   d. 更新 order_detail 状态为“已取消”（status=0）
+      - 带重试机制（配置化，默认3次，指数退避）
+   e. 【新增】同步更新 product_stock 表：
+      - 从 Redis 读取最新库存值（product:stock:{productId}）
+      - 使用乐观锁更新 MySQL（带3次重试）
+      - 如果记录不存在，自动创建
+   f. 允许部分商品取消失败，返回详细结果
+4. 返回取消结果（成功/失败详情）
 ```
+
+**关键特性**：
+- ✅ **同步更新**：Redis + order_detail + product_stock 三者同时更新
+- ✅ **部分失败容忍**：一个商品失败不影响其他商品
+- ✅ **数据一致性保障**：Redis成功后立即更新MySQL，减少不一致窗口
+- ✅ **人工介入机制**：如果Redis成功但MySQL失败，记录严重日志并要求人工处理
 
 ### 8.3 定时对账任务（设计预留）
 
@@ -326,6 +405,39 @@ org.example.springbootdemo
 - 与 MySQL `product_stock` 表对比
 - 若差异超过阈值（如 5%），以 MySQL 为准修正 Redis（或反之根据业务决定）
 - 记录对账日志，异常告警
+
+### 8.4 商品补货流程（同步更新）★
+
+```
+1. 前端管理员携带 Token 请求补货接口 /admin/stock/replenish
+2. RoleInterceptor 校验用户是否为管理员（roleId=1）
+3. Controller 接收补货请求（商品列表，包含 productId、productName、quantity）
+4. Service 层执行补货逻辑：
+   a. 【新增】校验商品名称一致性：
+      - 如果商品已存在且名称不匹配，返回错误
+      - 如果商品不存在，允许继续（后续会自动创建）
+   b. 提取商品名称映射 Map<productId, productName>
+   c. 调用 LuaScriptManager.executeReplenish() 增加 Redis 库存
+   d. 遍历每个商品，同步更新 MySQL：
+      - 调用 updateProductStock(productId, newStock, productName)
+      - 如果 product_stock 不存在：
+        * 先创建 product_stock 记录（满足外键约束）
+        * 再检查 product 表，如果不存在则创建
+        * 使用前端传入的商品名称，如无则用默认值 "商品_{id}"
+      - 如果 product_stock 存在：
+        * 使用乐观锁更新库存（带3次重试）
+   e. 写入补货审计日志 stock_replenish_log（带2次重试）
+   f. 如果最终失败，记录严重日志并要求人工介入
+5. 返回补货结果（批次ID、各商品操作详情）
+```
+
+**关键特性**：
+- ✅ **商品名称校验**：确保已存在商品的名称与数据库一致
+- ✅ **新商品自动创建**：同时创建 product 和 product_stock 记录
+- ✅ **外键约束处理**：先插入 product_stock，再插入 product
+- ✅ **同步更新**：Redis + MySQL 同时更新，减少不一致窗口
+- ✅ **审计日志**：记录每次补货的批次、数量、前后库存值
+- ✅ **人工介入机制**：最终失败时记录 CRITICAL 级别日志
 
 ---
 
@@ -339,20 +451,34 @@ org.example.springbootdemo
 - `async:queue:add`
 - `async:queue:rollback`
 
-### 9.2 消费流程
+### 9.2 消费流程（扣减/增加队列）
 
 1. 批量从 Redis List 中 `poll` 最多 `batchSize` 条消息（配置为 50）
 2. 解析 JSON 消息，得到 `bizNo`、`platformId` 和 `items` 列表
-3. 遍历 items，对每个商品：
-   - 从 Redis 获取当前库存值
-   - 更新/插入 MySQL `product_stock` 表（带乐观锁重试）
-   - 若为扣减操作，插入订单明细 `order_detail`
-4. 若为回滚消息，更新订单明细状态为“已回滚”
-5. 删除对应的 Redis 快照 key
-6. 若处理失败，消息重新放回队列尾部（保证至少一次处理）
+3. **数据库幂等性检查**（防止重复消费）：
+   - 查询 `biz_idempotent` 表，检查该 bizNo + opType + platformId 是否已处理
+   - 状态：0-处理中，1-成功，2-失败
+   - 如果已成功，跳过；如果曾失败，拒绝重试
+4. **插入“处理中”状态**（利用唯一索引防止并发重复）
+5. 遍历 items，对每个商品：
+   - 从 Redis 获取当前库存值（作为备份表的权威数据源）
+   - **如果是扣减操作**：先插入订单明细 `order_detail`（利用唯一索引做幂等保护）
+   - 更新/插入 MySQL `product_stock` 表（带乐观锁重试，最多3次）
+6. 更新最终状态为“成功”或“失败”
+7. 删除对应的 Redis 快照 key
+8. 若处理失败，消息重新放回队列尾部（保证至少一次处理）
 
-### 9.3 队列消息格式
+### 9.3 消费流程（回滚队列）
 
+1. 从消息中解析商品信息（包含回滚前的库存快照）
+2. 如果消息中没有 items，尝试从 Redis 快照读取
+3. 遍历每个商品，恢复 MySQL 库存到原始值（使用乐观锁）
+4. 所有商品恢复完成后，更新 order_detail 状态为“已回滚”（status=2）
+5. 删除 Redis 快照
+
+### 9.4 队列消息格式
+
+**扣减/增加消息**：
 ```json
 {
   "bizNo": "ORD2024001",
@@ -363,6 +489,19 @@ org.example.springbootdemo
   ]
 }
 ```
+
+**回滚消息**：同上，但 quantity 存储的是回滚前的原始库存值
+
+### 9.5 补货同步策略说明
+
+**与订单创建的差异**：
+- **订单创建**：Redis 成功后异步持久化到 MySQL（通过队列）
+- **商品补货**：Redis 成功后**同步更新** MySQL（直接调用）
+
+**原因**：
+1. 补货频率远低于下单频率，同步更新不会造成性能瓶颈
+2. 补货是管理操作，对一致性要求更高
+3. 避免补货后立即查询出现数据不一致
 
 ---
 
@@ -376,12 +515,24 @@ org.example.springbootdemo
 
 ### 10.2 角色权限控制
 
-- `RoleInterceptor` 仅对 `/dashboard/**` 路径生效。
-- 规则：访问 `/updateUsers` 或 `/delete` 需要 `roleId = 1`（管理员），否则抛出权限不足异常。
+- `RoleInterceptor` 对以下路径生效：
+  - `/dashboard/**`（数据看板）
+  - `/admin/stock/**`（库存管理）
+  
+- **规则**：
+  - 访问 `/updateUsers` 或 `/delete` 需要 `roleId = 1`（管理员）
+  - **访问 `/admin/stock/replenish` 需要 `roleId = 1`（管理员）** ★
+  - 其他用户只能查看数据，不能执行写操作
+
+- **白名单排除**：
+  - `/dashboard/getUsers`：普通用户可查看用户列表
+  - `/dashboard/getOrders`：普通用户可查看订单列表
+  - `/dashboard/getStocks`：普通用户可查看库存列表
 
 ### 10.3 白名单配置
 
 ```java
+// JWT 认证拦截器（所有请求都需要认证，除了白名单）
 registry.addInterceptor(jwtAuthInterceptor)
     .excludePathPatterns(
         "/users/login",
@@ -390,6 +541,15 @@ registry.addInterceptor(jwtAuthInterceptor)
         "/v3/api-docs/**",
         "/swagger-ui/**",
         ...
+    );
+
+// 角色权限拦截器（仅对特定路径生效）
+registry.addInterceptor(roleAuthInterceptor)
+    .addPathPatterns("/dashboard/**", "/admin/stock/**")
+    .excludePathPatterns(
+        "/dashboard/getUsers",
+        "/dashboard/getOrders",
+        "/dashboard/getStocks"
     );
 ```
 
@@ -504,23 +664,82 @@ md5:
 - **Redis 主存储 + MySQL 备份**的混合架构，兼顾性能与可靠性。
 - **Lua 脚本统一管理**，代码复用度高，原子性有保障。
 - **轻量级消息队列**基于 Redis List，无额外中间件依赖。
-- **幂等性设计**贯穿所有写操作，保证重复请求安全。
+- **幂等性设计**贯穿所有写操作，保证重复请求安全：
+  - 订单创建：`biz:idempotent:deduct:{bizNo}`
+  - 订单取消：`cancel:idempotent:{bizNo}:{productId}`（商品级粒度）
+  - 异步消费：`biz_idempotent` 表持久化幂等记录
 - **乐观锁 + 重试机制**确保备份表并发更新安全。
 - **完善的异常处理与统一响应**，便于前端对接。
+- **结构化日志系统**：按业务类别路由到不同日志文件（order.mysql、order.redis、replenish.mysql等）
+- **取消订单同步更新**：Redis + order_detail + product_stock 三者强一致，减少不一致窗口
+- **部分失败容忍**：多商品取消时，允许部分成功部分失败，返回详细结果
+- **全额取消校验**：强制要求取消数量等于购买数量，符合电商业务规范
+- **智能补货系统**：
+  - 商品名称一致性校验，防止数据污染
+  - 新商品自动初始化（product + product_stock）
+  - 补货审计日志完整记录每次操作
+  - 同步更新策略保证强一致性
+- **完善的权限控制体系**：
+  - JWT 无状态认证
+  - 基于角色的接口级权限控制（RoleInterceptor）
+  - 前端按钮隐藏 + 后端接口保护（双重防护）
 
 ### 13.2 可扩展方向
 
 1. **引入 Redisson 分布式锁**，用于防止同一商品并发冲突（当前 Lua 原子性已覆盖）。
-2. **实现定时对账任务**，完善最终一致性闭环。
+2. **实现定时对账任务**，完善最终一致性闭环：
+   ```java
+   @Scheduled(fixedDelay = 300000) // 每5分钟
+   public void reconcileStock() {
+       // 1. 扫描所有 product:stock:* 
+       // 2. 对比 MySQL product_stock
+       // 3. 记录差异日志
+       // 4. 可选：自动修正或以MySQL为准
+   }
+   ```
 3. **增加库存预警**，当 Redis 库存低于阈值时主动通知。
 4. **使用 Redis Stream** 替代 List 作为消息队列，支持消费者组和消息确认。
 5. **集成 Sentinel** 进行流量控制和熔断降级。
 6. **将消费者独立为微服务**，实现库存持久化服务的独立部署与扩容。
+7. **添加性能监控**：
+   - 已实现 `ResponseTimeInterceptor` 拦截器，记录订单相关请求的响应时间
+   - 可集成 Prometheus + Grafana 实现可视化监控
+8. **灰度发布支持**：通过配置开关控制新旧逻辑切换
 
 ---
 
 ## 十四、总结
 
-本项目完整实现了一套基于 Redis + MySQL 的电商库存防超卖系统。通过原子化 Lua 脚本、异步队列持久化、幂等控制、乐观锁等机制，有效解决了高并发下的库存准确性与数据持久化的矛盾。代码结构清晰，注释详尽，可作为毕业设计或生产环境的基础原型。
+本项目完整实现了一套基于 Redis + MySQL 的电商库存防超卖系统。通过原子化 Lua 脚本、异步队列持久化、幂等控制、乐观锁等机制，有效解决了高并发下的库存准确性与数据持久化的矛盾。
 
-后续你可基于此文档撰写毕业设计报告、系统设计说明书，或在新的对话中引用各模块细节进行深入讨论。
+### 核心架构特点：
+
+1. **混合存储架构**：Redis 作为主存储承载高并发读写，MySQL 作为备份存储保证数据可靠性
+2. **异步持久化**：订单创建后通过 Redis List 队列异步持久化到 MySQL，提升响应速度
+3. **同步补偿机制**：取消订单采用同步更新策略，确保 Redis + order_detail + product_stock 三者强一致
+4. **多层幂等保护**：
+   - Redis 层：TTL 幂等标记（短期防重）
+   - MySQL 层：`biz_idempotent` 表持久化幂等记录（长期防重）
+   - 唯一索引：`order_detail` 表的联合唯一索引（最终防线）
+5. **结构化日志**：按业务类别路由到不同日志文件，便于问题定位和性能分析
+6. **健壮性设计**：
+   - 乐观锁 + 重试机制处理并发冲突
+   - 部分失败容忍提高系统可用性
+   - 人工介入机制应对极端异常情况
+7. **智能补货系统**：
+   - 商品名称一致性校验，防止数据污染
+   - 新商品自动初始化（product + product_stock）
+   - 补货审计日志完整记录每次操作
+   - 同步更新策略保证强一致性
+8. **多层次权限控制**：
+   - JWT 认证：所有接口必须携带有效 Token
+   - 角色授权：管理员才能执行补货、删除等敏感操作
+   - 前端防护：非管理员看不到敏感按钮
+   - 后端兜底：即使绕过前端，后端也会拒绝请求
+9. **生产级日志系统**：
+   - 结构化日志：JSON 格式，便于 ELK 分析
+   - 分类路由：不同业务模块独立日志文件
+   - 告警机制：CRITICAL 级别日志触发人工介入
+   - 性能监控：可选的响应时间拦截器
+
+代码结构清晰，注释详尽，可作为毕业设计或生产环境的基础原型。后续你可基于此文档撰写毕业设计报告、系统设计说明书，或在新的对话中引用各模块细节进行深入讨论。

@@ -14,7 +14,7 @@ public class QueueConsumerProperties {
     /**
      * 每次拉取的最大消息数量
      */
-    private int batchSize = 50;
+    private int batchSize = 100;
 
     /**
      * 扣减队列名称

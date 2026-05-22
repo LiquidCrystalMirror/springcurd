@@ -3,6 +3,7 @@ package org.example.springbootdemo.service.imp;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbootdemo.config.StockScriptProperties;
+import org.example.springbootdemo.config.TestModeContext;
 import org.example.springbootdemo.constant.enums.ScriptResultEnum;
 import org.example.springbootdemo.dto.ApiResult;
 import org.example.springbootdemo.dto.OrderDTO;
@@ -57,12 +58,27 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
     public ApiResult<OrderVO> processOrder(OrderDTO orderDTO) {
         String bizNo = orderDTO.getOrderNo();
         String platformId = orderDTO.getPlatformId();
-        // 合并相同商品的购买数量
-        Map<Long, Integer> operations = new HashMap<>();
-        for (OrderItemDTO item : orderDTO.getItems()) {
-            operations.merge(item.getProductId(), item.getQuantity(), Integer::sum);
+        
+        // 检查是否为测试模式
+        if (TestModeContext.isTestMode()) {
+            StructuredLogger.info(ORDER_REDIS, bizNo, 
+                    "【测试模式】添加订单请求，不执行Redis操作，platformId={}", platformId);
+            
+            // 合并相同商品的购买数量
+            Map<Long, Integer> operations = new HashMap<>();
+            for (OrderItemDTO item : orderDTO.getItems()) {
+                operations.merge(item.getProductId(), item.getQuantity(), Integer::sum);
+            }
+            
+            // 返回模拟结果
+            OrderVO mockVO = new OrderVO();
+            mockVO.setOrderNo(bizNo);
+            mockVO.setPlatformId(platformId);
+            mockVO.setOperations(operations);
+            
+            return ApiResult.success(mockVO);
         }
-
+        
         // 参数校验
         if (bizNo == null || bizNo.trim().isEmpty()) {
             return ApiResult.error(400, "订单号不能为空");
@@ -70,8 +86,14 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
         if (platformId == null || platformId.trim().isEmpty()) {
             return ApiResult.error(400, "平台ID不能为空");
         }
-        if (operations.isEmpty()) {
+        if (orderDTO.getItems() == null || orderDTO.getItems().isEmpty()) {
             return ApiResult.error(400, "商品信息不能为空");
+        }
+        
+        // 合并相同商品的购买数量
+        Map<Long, Integer> operations = new HashMap<>();
+        for (OrderItemDTO item : orderDTO.getItems()) {
+            operations.merge(item.getProductId(), item.getQuantity(), Integer::sum);
         }
         
         StructuredLogger.info(ORDER_REDIS, bizNo, 
@@ -138,6 +160,20 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
     public ApiResult<String> cancelOrder(OrderDTO orderDTO) {
         String bizNo = orderDTO.getOrderNo();
         String platformId = orderDTO.getPlatformId();
+        
+        // 检查是否为测试模式
+        if (TestModeContext.isTestMode()) {
+            StructuredLogger.info(ORDER_MYSQL, bizNo, 
+                    "【测试模式】取消订单请求，不执行数据库操作，platformId={}", platformId);
+            
+            // 模拟返回结果：所有商品都取消成功
+            StringBuilder mockResult = new StringBuilder();
+            for (OrderItemDTO item : orderDTO.getItems()) {
+                mockResult.append("商品[").append(item.getProductId()).append("]取消成功（测试模式）\n");
+            }
+            return ApiResult.success(mockResult.toString());
+        }
+        
         // 合并相同商品的取消数量
         Map<Long, Integer> operations = new HashMap<>();
         for (OrderItemDTO item : orderDTO.getItems()) {
@@ -353,6 +389,9 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                     }
                 }
             }
+            StructuredLogger.error(ORDER_MYSQL, "SYSTEM",
+                    "【严重错误-需人工介入】取消订单时product_stock表更新最终失败（已重试{}次），productId={}，数据不一致风险！请立即检查并手动修复。可能原因：高并发场景下持续冲突",
+                    maxRetries, productId);
             throw new RuntimeException("乐观锁重试失败，productId=" + productId);
         }
     }
