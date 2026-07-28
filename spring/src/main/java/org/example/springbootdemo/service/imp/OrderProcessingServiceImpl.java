@@ -4,8 +4,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbootdemo.config.StockScriptProperties;
 import org.example.springbootdemo.config.TestModeContext;
-import org.example.springbootdemo.constant.enums.ScriptResultEnum;
-import org.example.springbootdemo.dto.ApiResult;
+import org.example.springbootdemo.util.ApiResult;
 import org.example.springbootdemo.dto.OrderDTO;
 import org.example.springbootdemo.dto.OrderItemDTO;
 import org.example.springbootdemo.entity.OrderDetail;
@@ -13,6 +12,7 @@ import org.example.springbootdemo.entity.ProductStock;
 import org.example.springbootdemo.mapper.ProductStockMapper;
 import org.example.springbootdemo.service.OrderDetailService;
 import org.example.springbootdemo.service.OrderProcessingService;
+
 import org.example.springbootdemo.util.LuaScriptManager;
 import org.example.springbootdemo.util.StructuredLogger;
 import org.example.springbootdemo.vo.OrderVO;
@@ -20,7 +20,6 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,8 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
     private RedissonClient redissonClient;
     @Resource
     private ProductStockMapper productStockMapper;
+    @Resource
+    private RabbitMQDemoProducer rabbitMQDemoProducer;
 
     /**
      * 处理订单（批量扣减库存）
@@ -125,6 +126,15 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                 
                 StructuredLogger.info(ORDER_REDIS, bizNo, 
                         "订单Redis库存扣减成功，商品种类数={}", operations.size());
+
+                // RabbitMQ: 发送扣减消息（异步，不影响主流程）
+                try {
+                    rabbitMQDemoProducer.sendDeduct(bizNo, platformId, operations);
+                } catch (Exception rabbitEx) {
+                    StructuredLogger.warn(ORDER_REDIS, bizNo,
+                            "RabbitMQ扣减消息发送异常（不影响业务）: {}", rabbitEx.getMessage());
+                }
+
                 return ApiResult.success(orderVO);
             } else {
                 // 转换错误消息为用户友好的提示
@@ -289,6 +299,14 @@ public class OrderProcessingServiceImpl implements OrderProcessingService {
                         sb.append("商品[").append(productId).append("]取消成功\n");
                         StructuredLogger.info(ORDER_MYSQL, bizNo, 
                                 "商品取消流程完成，productId={}", productId);
+
+                        // RabbitMQ: 发送回滚消息
+                        try {
+                            rabbitMQDemoProducer.sendRollback(bizNo, platformId, productId, orderDetail.getQuantity());
+                        } catch (Exception rabbitEx) {
+                            StructuredLogger.warn(ORDER_MYSQL, bizNo,
+                                    "RabbitMQ回滚消息发送异常（不影响业务）: {}", rabbitEx.getMessage());
+                        }
                     } catch (Exception e) {
                         // product_stock更新失败不影响订单状态，记录警告
                         sb.append("商品[").append(productId).append("]取消成功，但库存备份表更新失败：").append(e.getMessage()).append("\n");

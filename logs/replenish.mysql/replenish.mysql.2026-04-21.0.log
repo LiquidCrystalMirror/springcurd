@@ -1,6 +1,0 @@
-2026-04-21 15:15:38.459 [http-nio-0.0.0.0-8080-exec-3] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.mysql] [BizNo:BATCH-2046488011234889730] [2026-04-21 15:15:38.459] 开始写入补货审计日志，记录数=3
-2026-04-21 15:15:38.478 [http-nio-0.0.0.0-8080-exec-3] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.mysql] [BizNo:BATCH-2046488011234889730] [2026-04-21 15:15:38.478] 补货审计日志写入成功
-2026-04-21 15:15:38.478 [http-nio-0.0.0.0-8080-exec-3] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.mysql] [BizNo:BATCH-2046488011234889730] [2026-04-21 15:15:38.478] 补货流程结束
-2026-04-21 15:20:14.779 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.mysql] [BizNo:BATCH-2046489170200776706] [2026-04-21 15:20:14.779] 开始写入补货审计日志，记录数=3
-2026-04-21 15:20:14.782 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.mysql] [BizNo:BATCH-2046489170200776706] [2026-04-21 15:20:14.782] 补货审计日志写入成功
-2026-04-21 15:20:14.782 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.mysql] [BizNo:BATCH-2046489170200776706] [2026-04-21 15:20:14.782] 补货流程结束

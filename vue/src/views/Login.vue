@@ -72,6 +72,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { loginApi} from "@/api/LoginApi.js";
+import { getHomePath } from '@/service/AuthService.js'
 
 const router = useRouter()
 const loginFormRef = ref(null)
@@ -112,7 +113,7 @@ const handleLogin = async () => {
       // 存储用户信息
       localStorage.setItem('user', JSON.stringify(response.data.user))
       localStorage.setItem('token', response.data.token)
-      router.push('/dashboard')
+      router.push(getHomePath())
     } else {
       ElMessage.error(response.message || '登录失败')
     }

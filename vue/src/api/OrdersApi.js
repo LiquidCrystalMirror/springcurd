@@ -1,8 +1,8 @@
 import {post} from "@/request/request.js"
 
-// 获取订单列表（Dashboard查询）
+// 获取订单列表
 export function getOrders(params){
-    return post('/dashboard/getOrders', params)
+    return post('/dashboard/orders', params)
 }
 
 // 添加订单

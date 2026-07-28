@@ -5,34 +5,174 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9b006ce6-2592-4a26-9466-b61ece38613e" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/Redis+Lua原子操作设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/Resilience4j熔断限流设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/乐观锁与指数退避重试设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/双重幂等保护设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/整体架构设计总览.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/本地消息表与可靠性投递设计.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/doc/架构升级说明_2026-07-14.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/DotenvEnvironmentPostProcessor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/RabbitMQConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/RabbitMQProperties.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/TraceIdFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/AuthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/ReplenishController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/StaffController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/CustomerDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishApproveDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/StaffDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/UserApproveDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/UserCreateDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/RabbitMessageLog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/RabbitMessageOrderLog.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/ReplenishOrder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/BadRequestException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/BusinessException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/ConflictException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/ForbiddenException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/NotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/ServiceUnavailableException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/UnauthorizedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/StatusInterceptor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/CustomerMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/RabbitMessageLogMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/RabbitMessageOrderLogMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/ReplenishOrderMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/StaffMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/ReplenishQuery.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/CustomerService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/Resilience4jService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StaffService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/CustomerServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/RabbitMQDemoProducer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/StaffServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/StockPersistenceConsumer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/ApiResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/DemoMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishOrderVO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/UserDetailVO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/META-INF/spring.factories" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/application-actuator.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/application-rabbitmq.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/application-resilience4j.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/CustomerMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/RabbitMessageLogMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/RabbitMessageOrderLogMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/ReplenishOrderMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/StaffMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/migration_v3.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/migration_v4.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/seed_data.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sql/sqltest.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vue/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vue/src/api/ReplenishApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vue/src/views/purchase/OrderCreate.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vue/src/views/purchase/OrderHistory.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vue/src/views/purchase/PurchaseLayout.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vue/src/views/stock/ReplenishList.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API测试用例.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/API测试用例.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biz_idempotent.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.2026-04-19.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.2026-04-20.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.2026-04-21.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.2026-04-22.0.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/order.mysql/order.mysql.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/order.mysql/order.mysql.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.2026-04-19.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.2026-04-20.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.2026-04-21.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.2026-04-22.0.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/order.redis/order.redis.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/order.redis/order.redis.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.2026-04-19.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.2026-04-20.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.2026-04-21.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.2026-04-22.0.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/replenish.mysql/replenish.mysql.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.2026-04-19.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.2026-04-20.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.2026-04-21.0.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.2026-04-22.0.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/replenish.redis/replenish.redis.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring.md" beforeDir="false" afterPath="$PROJECT_DIR$/spring.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order_detail.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/product_stock.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/role.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring.md" beforeDir="false" afterPath="$PROJECT_DIR$/doc/spring.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/IMPLEMENTATION_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/LOGGING_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/REPLENISH_NEW_PRODUCT_STRATEGY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/THEORETICAL_EXECUTION_CHECK.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/QueueConsumerProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/QueueConsumerProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/QueueConsumerProperties.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/RedissonConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/RedissonConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/ScriptResultEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/ScriptResultEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/UserStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/constant/enums/UserStatus.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/DashBoardController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/StockManageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/StockManageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/StockManageController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/controller/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ApiResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/LoginResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/LoginResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/OrderItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/OrderItemDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/ReplenishItemDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/StockDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/dto/StockDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/OrderDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/OrderDetail.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/ProductStock.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/entity/ProductStock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/JwtAuthInterceptor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/RoleInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/interceptor/RoleInterceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/OrderQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/OrderQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/ProductStockQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/query/ProductStockQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/OrderProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/OrderProcessingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/ReplenishService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/ReplenishService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/StockPersistenceConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderProcessingServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/OrderProcessingServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/ReplenishServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/ReplenishServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/User.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/service/imp/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/PasswordUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/util/PasswordUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/org/example/springbootdemo/vo/ReplenishVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-data.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-data.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-mapper.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application-redis.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/biz_idempotent.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/application.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spring/src/main/resources/logback-spring.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/logback-spring.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/ProductStockMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/ProductStockMapper.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/stock_replenish_log.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/batch_deduct.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/batch_deduct.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/lua/rollback.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/resources/mapper/UserMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/test/java/org/example/springbootdemo/SpringBootDemoApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/test/java/org/example/springbootdemo/SpringBootDemoApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stock_replenish_log.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/vue/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/api/LoginApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/LoginApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/api/OrdersApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/OrdersApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/api/RegisterApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/RegisterApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/api/StockApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/StockApi.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/api/UserApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/api/UserApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/enum/user/Role.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/enum/user/Role.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/enum/user/UserStatus.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/enum/user/UserStatus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/request/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/request/request.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/service/AuthService.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/service/AuthService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/src/views/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Dashboard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/Register.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/Register.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/orders/ListView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/orders/ListView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/stock/ListView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/stock/ListView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vue/src/views/user/ListView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/vue/src/views/user/ListView.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vue/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vue/vite.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/答辩PPT技术文档.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +192,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -72,6 +216,8 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;JUnit.BcryptHashTool.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.SpringBootDemoApplicationTests.printEnv.executor&quot;: &quot;Run&quot;,
     &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
     &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
@@ -85,14 +231,14 @@
     &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;24.12.0&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;17&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/OK/游戏本体&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Administrator/IdeaProjects/SillyTavern&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;项目&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.4816092&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
@@ -134,7 +280,38 @@
       </set>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.BcryptHashTool">
+    <configuration name="BcryptHashTool" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="spring" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.example.springbootdemo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.example.springbootdemo" />
+      <option name="MAIN_CLASS_NAME" value="org.example.springbootdemo.BcryptHashTool" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SpringBootDemoApplicationTests.printEnv" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="spring" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.example.springbootdemo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.example.springbootdemo" />
+      <option name="MAIN_CLASS_NAME" value="org.example.springbootdemo.SpringBootDemoApplicationTests" />
+      <option name="METHOD_NAME" value="printEnv" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="SpringBootDemoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="spring" />
@@ -151,7 +328,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.BcryptHashTool" />
         <item itemvalue="Spring Boot.SpringBootDemoApplication" />
+        <item itemvalue="JUnit.SpringBootDemoApplicationTests.printEnv" />
       </list>
     </recent_temporary>
   </component>
@@ -261,6 +440,70 @@
       <workItem from="1779288411666" duration="12000" />
       <workItem from="1779288607882" duration="26000" />
       <workItem from="1779288659659" duration="16000" />
+      <workItem from="1779426066080" duration="25000" />
+      <workItem from="1779426115305" duration="6000" />
+      <workItem from="1779426237936" duration="47000" />
+      <workItem from="1779426910188" duration="74000" />
+      <workItem from="1779427190689" duration="4000" />
+      <workItem from="1779427213364" duration="127000" />
+      <workItem from="1779427396472" duration="27000" />
+      <workItem from="1779630035835" duration="37000" />
+      <workItem from="1779634715662" duration="6000" />
+      <workItem from="1779786787908" duration="24000" />
+      <workItem from="1779786825465" duration="5000" />
+      <workItem from="1780040076622" duration="22000" />
+      <workItem from="1780225772116" duration="1772000" />
+      <workItem from="1780234645114" duration="1588000" />
+      <workItem from="1780324794202" duration="712000" />
+      <workItem from="1780375438404" duration="1053000" />
+      <workItem from="1780387175232" duration="5000" />
+      <workItem from="1780388676990" duration="1438000" />
+      <workItem from="1780467371571" duration="870000" />
+      <workItem from="1780478684842" duration="4246000" />
+      <workItem from="1780491920160" duration="32000" />
+      <workItem from="1780492747193" duration="1065000" />
+      <workItem from="1780725828718" duration="70000" />
+      <workItem from="1780814290120" duration="2875000" />
+      <workItem from="1780919973409" duration="65000" />
+      <workItem from="1780924896830" duration="2716000" />
+      <workItem from="1780983881535" duration="27000" />
+      <workItem from="1781443888392" duration="94000" />
+      <workItem from="1781443992351" duration="69000" />
+      <workItem from="1781445299876" duration="2331000" />
+      <workItem from="1781506673701" duration="1622000" />
+      <workItem from="1781596344792" duration="116000" />
+      <workItem from="1781604643575" duration="2973000" />
+      <workItem from="1781621774124" duration="1644000" />
+      <workItem from="1781623533395" duration="2303000" />
+      <workItem from="1781699384790" duration="7251000" />
+      <workItem from="1781775844258" duration="107000" />
+      <workItem from="1781776771395" duration="3171000" />
+      <workItem from="1781784993253" duration="3492000" />
+      <workItem from="1781798718638" duration="2161000" />
+      <workItem from="1782032196544" duration="92000" />
+      <workItem from="1782032326244" duration="8387000" />
+      <workItem from="1782042966393" duration="917000" />
+      <workItem from="1782049024677" duration="4000" />
+      <workItem from="1782201818016" duration="7405000" />
+      <workItem from="1782215142336" duration="3652000" />
+      <workItem from="1782223328363" duration="986000" />
+      <workItem from="1782364100625" duration="647000" />
+      <workItem from="1782401453551" duration="8000" />
+      <workItem from="1782439815732" duration="19000" />
+      <workItem from="1782439872749" duration="47000" />
+      <workItem from="1782439934223" duration="4000" />
+      <workItem from="1782439958797" duration="7000" />
+      <workItem from="1782478010198" duration="32000" />
+      <workItem from="1782478297980" duration="18000" />
+      <workItem from="1782478385756" duration="11000" />
+      <workItem from="1782482680722" duration="41000" />
+      <workItem from="1783999757385" duration="13000" />
+      <workItem from="1783999841603" duration="2619000" />
+      <workItem from="1784094665257" duration="1682000" />
+      <workItem from="1784101822600" duration="10000" />
+      <workItem from="1785228365376" duration="103000" />
+      <workItem from="1785228822595" duration="476000" />
+      <workItem from="1785229414323" duration="345000" />
     </task>
     <servers />
   </component>
@@ -269,6 +512,29 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

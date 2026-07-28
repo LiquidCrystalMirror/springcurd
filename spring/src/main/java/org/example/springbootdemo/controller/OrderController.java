@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import org.example.springbootdemo.dto.ApiResult;
+import org.example.springbootdemo.util.ApiResult;
 import org.example.springbootdemo.dto.OrderDTO;
 import org.example.springbootdemo.service.OrderProcessingService;
 import org.example.springbootdemo.vo.OrderVO;

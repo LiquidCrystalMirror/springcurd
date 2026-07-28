@@ -1,7 +1,7 @@
 package org.example.springbootdemo.constant.enums;
 
 import lombok.Getter;
-import org.example.springbootdemo.dto.ApiResult;
+import org.example.springbootdemo.util.ApiResult;
 import org.example.springbootdemo.util.LuaScriptManager;
 
 /**

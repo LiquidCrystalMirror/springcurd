@@ -1,5 +1,6 @@
 package org.example.springbootdemo.query;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.example.springbootdemo.query.base.BaseQuery;
 
@@ -7,6 +8,7 @@ import org.example.springbootdemo.query.base.BaseQuery;
 public class OrderQuery extends BaseQuery {
     private String orderNo;
     private String platformId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long productId;
     private Integer quantity;
     private Byte status;

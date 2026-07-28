@@ -1,2 +1,0 @@
-2026-04-21 15:15:38.445 [http-nio-0.0.0.0-8080-exec-3] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:BATCH-2046488011234889730] [2026-04-21 15:15:38.445] 开始执行补货操作，商品种类数=3
-2026-04-21 15:20:14.768 [http-nio-0.0.0.0-8080-exec-5] INFO  org.example.springbootdemo.util.StructuredLogger - [Category:replenish.redis] [BizNo:BATCH-2046489170200776706] [2026-04-21 15:20:14.768] 开始执行补货操作，商品种类数=3

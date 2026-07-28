@@ -1,5 +1,6 @@
 import router from '@/router'
 import { ElMessage } from 'element-plus'
+import Role from '@/enum/user/Role.js'
 
 /**
  * 解码 JWT Token（不验证签名，仅读取 payload）
@@ -121,10 +122,77 @@ export function checkAuth() {
   return true
 }
 
+/**
+ * 检查当前用户是否拥有指定角色之一
+ * @param {number[]} roles - 允许的角色数组
+ * @returns {boolean}
+ */
+export function hasRole(roles) {
+  const user = getUser()
+  if (!user || user.roleId === undefined) return false
+  return roles.includes(user.roleId)
+}
+
+/**
+ * 检查当前用户是否为管理端角色（可访问 Dashboard）
+ * @returns {boolean}
+ */
+export function isManagement() {
+  return hasRole([Role.REPLENISHER, Role.HR, Role.SUPERVISOR, Role.SYSTEM_ADMIN])
+}
+
+/**
+ * 检查当前用户是否为系统管理员
+ * @returns {boolean}
+ */
+export function isAdmin() {
+  return hasRole([Role.SYSTEM_ADMIN])
+}
+
+/**
+ * 检查当前用户是否为人事
+ */
+export function isHR() {
+  return hasRole([Role.HR, Role.SYSTEM_ADMIN])
+}
+
+/**
+ * 检查当前用户是否为监管
+ */
+export function isSupervisor() {
+  return hasRole([Role.SUPERVISOR, Role.SYSTEM_ADMIN])
+}
+
+/**
+ * 检查当前用户是否为购买用户
+ * @returns {boolean}
+ */
+export function isBuyer() {
+  return hasRole([Role.BUYER])
+}
+
+/**
+ * 获取登录后应跳转的首页路径
+ * @returns {string}
+ */
+export function getHomePath() {
+  if (isBuyer()) return '/purchase'
+  return '/dashboard'
+}
+
 export default {
   getUser,
   getToken,
   isLoggedIn,
+  isTokenValid,
+  getTokenExpireTime,
+  hasRole,
+  isManagement,
+  isAdmin,
+  isHR,
+  isSupervisor,
+  isBuyer,
+  getHomePath,
   logout,
   redirectToLogin,
   checkAuth

@@ -1,0 +1,15 @@
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    # 启用发布确认（BROKER确认），保证消息不丢失
+    publisher-confirm-type: correlated
+    # 启用发送失败退回（路由不到队列时回调）
+    publisher-returns: true
+    listener:
+      simple:
+        # 开发环境禁用监听器自动启动（避免无RabbitMQ时刷屏报错）
+        # 生产环境设为 true
+        auto-startup: ${RABBITMQ_LISTENER_AUTO_START:false}

@@ -90,23 +90,8 @@ end
 -- 6. 保存快照
 redis.call('SETEX', snapshot_key, timeout, cjson.encode(snapshot))
 
--- 7. 构造队列消息（包含商品明细）
-local items = {}
-for i = 1, N do
-    table.insert(items, {
-        key = KEYS[i],
-        quantity = tonumber(ARGV[i])
-    })
-end
-local queue_msg = cjson.encode({
-    bizNo = biz_no,
-    platformId = platform_id,
-    items = items
-})
-redis.call('RPUSH', 'async:queue:' .. op_type, queue_msg)
-
--- 8. 标记成功
+-- 7. 标记成功
 redis.call('SETEX', idempotent_key, timeout, 'success')
 
--- 9. 返回
+-- 8. 返回
 return {1, "success", biz_no, snapshot_key}

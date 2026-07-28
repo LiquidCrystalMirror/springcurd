@@ -1,0 +1,105 @@
+# ==================== Resilience4j 熔断器配置 ====================
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        # 滑动窗口类型：COUNT_BASED（基于请求次数）/ TIME_BASED（基于时间）
+        sliding-window-type: COUNT_BASED
+        # 滑动窗口大小：统计最近10次请求
+        sliding-window-size: 10
+        # 熔断阈值：失败率 >= 50% 时熔断
+        failure-rate-threshold: 50
+        # 慢调用阈值：响应时间 >= 3s 视为慢调用
+        slow-call-duration-threshold: 3s
+        # 慢调用比例阈值：慢调用比例 >= 50% 时熔断
+        slow-call-rate-threshold: 50
+        # 从半开→关闭需要的最小成功调用次数
+        minimum-number-of-calls: 5
+        # 半开状态时允许的请求数
+        permitted-number-of-calls-in-half-open-state: 3
+        # 熔断后等待多久进入半开状态
+        wait-duration-in-open-state: 10s
+        # 自动从半开→打开（如果半开放行的请求都失败）
+        automatic-transition-from-open-to-half-open-enabled: true
+        # 记录以下异常为失败
+        record-exceptions:
+          - org.example.springbootdemo.exception.ServiceUnavailableException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException
+    instances:
+      # Redis 操作熔断器
+      redisService:
+        base-config: default
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 15s
+      # RabbitMQ 操作熔断器
+      rabbitmqService:
+        base-config: default
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 15s
+      # 订单处理熔断器
+      orderService:
+        base-config: default
+
+  # ==================== 重试配置（替代手动 Thread.sleep 重试） ====================
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 100ms
+        # 指数退避：100ms → 200ms → 400ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        # 重试以下异常
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException
+          - org.springframework.dao.TransientDataAccessException
+    instances:
+      redisRetry:
+        base-config: default
+        max-attempts: 3
+        wait-duration: 100ms
+      dbRetry:
+        base-config: default
+        max-attempts: 3
+        wait-duration: 50ms
+
+  # ==================== 限流配置 ====================
+  ratelimiter:
+    configs:
+      default:
+        # 刷新周期
+        limit-refresh-period: 1s
+        # 每个周期允许的请求数
+        limit-for-period: 50
+        # 等待超时时间（0=不等待直接拒绝）
+        timeout-duration: 0ms
+    instances:
+      # 订单创建接口限流：每秒最多20个请求
+      orderCreate:
+        limit-refresh-period: 1s
+        limit-for-period: 20
+        timeout-duration: 0ms
+      # 登录接口限流：每秒最多5个请求（防暴力破解）
+      loginRateLimit:
+        limit-refresh-period: 1s
+        limit-for-period: 5
+        timeout-duration: 0ms
+      # 通用API限流：每秒最多50个请求
+      apiRateLimit:
+        limit-refresh-period: 1s
+        limit-for-period: 50
+        timeout-duration: 0ms
+
+  # ==================== 时间限制器（超时控制） ====================
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 5s
+        cancel-running-future: true
+    instances:
+      redisTimeLimiter:
+        timeout-duration: 3s

@@ -1,6 +1,12 @@
 # application-redis.yml
 redis:
+  # 独立 Redis 连接属性（支持 .env 覆盖）
+  address: ${REDIS_ADDRESS:redis://127.0.0.1:6379}
+  database: ${REDIS_DATABASE:0}
+  pool-size: ${REDIS_POOL_SIZE:64}
   redisson:
+    # 完整 Redisson YAML 配置（兜底方案，内部占位符不会由 Spring 解析）
+    # 优先使用上面独立属性，仅当独立属性全为空时才回退到此配置
     config: |
       singleServerConfig:
         address: "redis://127.0.0.1:6379"
@@ -21,11 +27,6 @@ stock:
     type:
       deduct: deduct
       add: add
-  queue:
-    batch-size: 100
-    deduct-queue: async:queue:deduct
-    add-queue: async:queue:add
-    rollback-queue: async:queue:rollback
   retry:
     max-attempts: 3  # 最大重试次数
     base-interval: 100  # 基础重试间隔（毫秒），实际间隔 = base-interval * (retry + 1)

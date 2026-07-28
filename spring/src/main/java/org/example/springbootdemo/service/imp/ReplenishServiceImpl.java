@@ -1,24 +1,29 @@
 package org.example.springbootdemo.service.imp;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbootdemo.config.TestModeContext;
-import org.example.springbootdemo.dto.ApiResult;
+import org.example.springbootdemo.util.ApiResult;
+import org.example.springbootdemo.dto.ReplenishApproveDTO;
 import org.example.springbootdemo.dto.ReplenishDTO;
 import org.example.springbootdemo.dto.ReplenishItemDTO;
 import org.example.springbootdemo.entity.Product;
 import org.example.springbootdemo.entity.ProductStock;
+import org.example.springbootdemo.entity.ReplenishOrder;
 import org.example.springbootdemo.entity.StockReplenishLog;
 import org.example.springbootdemo.mapper.ProductMapper;
 import org.example.springbootdemo.mapper.ProductStockMapper;
+import org.example.springbootdemo.mapper.ReplenishOrderMapper;
 import org.example.springbootdemo.mapper.StockReplenishLogMapper;
+
 import org.example.springbootdemo.service.ReplenishService;
 import org.example.springbootdemo.util.LuaScriptManager;
 import org.example.springbootdemo.util.StructuredLogger;
+import org.example.springbootdemo.vo.ReplenishOrderVO;
 import org.example.springbootdemo.vo.ReplenishVO;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,9 +39,13 @@ public class ReplenishServiceImpl implements ReplenishService {
     @Resource
     private StockReplenishLogMapper replenishLogMapper;
     @Resource
+    private ReplenishOrderMapper replenishOrderMapper;
+    @Resource
     private ProductStockMapper productStockMapper;
     @Resource
     private ProductMapper productMapper;
+    @Resource
+    private RabbitMQDemoProducer rabbitMQDemoProducer;
 
     @Override
     public ApiResult<ReplenishVO> replenish(ReplenishDTO dto) {
@@ -90,6 +99,20 @@ public class ReplenishServiceImpl implements ReplenishService {
         StructuredLogger.info(REPLENISH_REDIS, "BATCH-" + batchId, 
                 "开始执行补货操作，商品种类数={}", operations.size());
 
+        // 2.1 创建补货单头记录（审核流程追踪）
+        try {
+            ReplenishOrder order = new ReplenishOrder();
+            order.setId(batchId);
+            order.setCreatorId(TestModeContext.isTestMode() ? 1 : getCurrentUserId());
+            order.setStatus(0); // 待审核
+            order.setCreateTime(LocalDateTime.now());
+            replenishOrderMapper.insert(order);
+            StructuredLogger.info(REPLENISH_MYSQL, "BATCH-" + batchId, "补货单头记录创建成功，status=待审核");
+        } catch (Exception e) {
+            StructuredLogger.warn(REPLENISH_MYSQL, "BATCH-" + batchId,
+                    "补货单头记录创建失败（不影响主流程）: {}", e.getMessage());
+        }
+
         // 3. 执行 Lua 脚本
         LuaScriptManager.ReplenishResult luaResult;
         try {
@@ -106,6 +129,14 @@ public class ReplenishServiceImpl implements ReplenishService {
             StructuredLogger.warn(REPLENISH_REDIS, "BATCH-" + batchId, 
                     "补货Redis操作失败，错误信息={}", luaResult.getMessage());
             return ApiResult.error(400, luaResult.getMessage());
+        }
+
+        // RabbitMQ: 发送补货增加消息（异步，不影响主流程）
+        try {
+            rabbitMQDemoProducer.sendAdd(String.valueOf(batchId), operations);
+        } catch (Exception rabbitEx) {
+            StructuredLogger.warn(REPLENISH_REDIS, "BATCH-" + batchId,
+                    "RabbitMQ补货消息发送异常（不影响业务）: {}", rabbitEx.getMessage());
         }
 
         // 4. 构建审计日志并同步更新 product_stock 表
@@ -146,7 +177,7 @@ public class ReplenishServiceImpl implements ReplenishService {
             } catch (Exception e) {
                 StructuredLogger.warn(REPLENISH_MYSQL, "BATCH-" + batchId, 
                         "补货日志写入失败，第{}/{}次重试", i + 1, maxRetries, e);
-                try { Thread.sleep(100); } catch (InterruptedException ignored) {}
+                try { Thread.sleep(100); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
             }
         }
 
@@ -286,5 +317,70 @@ public class ReplenishServiceImpl implements ReplenishService {
         }
         
         return null;
+    }
+
+    // ==================== 补货单审核 ====================
+
+    @Override
+    public ApiResult<PageInfo<ReplenishOrderVO>> findPage(int page, int pageSize, Integer status) {
+        int offset = (page - 1) * pageSize;
+        List<ReplenishOrderVO> list = replenishOrderMapper.selectPageWithDetail(status, offset, pageSize);
+        long total = replenishOrderMapper.countWithDetail(status);
+
+        PageInfo<ReplenishOrderVO> pageInfo = new PageInfo<>();
+        pageInfo.setList(list);
+        pageInfo.setTotal(total);
+        pageInfo.setPageNum(page);
+        pageInfo.setPageSize(pageSize);
+        pageInfo.setPages((int) Math.ceil((double) total / pageSize));
+        return ApiResult.success(pageInfo);
+    }
+
+    @Override
+    public ApiResult<Void> approve(ReplenishApproveDTO dto, Integer approverId) {
+        if (approverId == null) {
+            return ApiResult.error(401, "未登录");
+        }
+
+        Boolean approved = dto.getApproved();
+        if (approved == null) {
+            return ApiResult.error(400, "审核结果不能为空");
+        }
+
+        // 拒绝时必须填写理由
+        if (!approved && (dto.getRemark() == null || dto.getRemark().trim().isEmpty())) {
+            return ApiResult.error(400, "拒绝时必须填写理由");
+        }
+
+        int targetStatus = approved ? 1 : 2; // 1=审核通过, 2=审核拒绝
+        String remark = dto.getRemark() != null ? dto.getRemark().trim() : (approved ? "审核通过" : "");
+
+        int rows = replenishOrderMapper.approve(dto.getId(), targetStatus, approverId, remark);
+        if (rows > 0) {
+            StructuredLogger.info(REPLENISH_MYSQL, "BATCH-" + dto.getId(),
+                    "补货单审核完成，结果={}, 审核人={}", approved ? "通过" : "拒绝", approverId);
+            return ApiResult.success();
+        }
+
+        // rows=0 说明该单不存在或已被他人审核（乐观锁 WHERE status=0 条件不满足）
+        StructuredLogger.warn(REPLENISH_MYSQL, "BATCH-" + dto.getId(),
+                "补货单审核失败（可能已被他人审核或单不存在），审核人={}", approverId);
+        return ApiResult.error(409, "该补货单已被审核或不存在");
+    }
+
+    /**
+     * 获取当前登录用户ID（从请求上下文获取，测试模式下返回 1）
+     */
+    private Integer getCurrentUserId() {
+        try {
+            jakarta.servlet.http.HttpServletRequest request =
+                    ((org.springframework.web.context.request.ServletRequestAttributes)
+                            org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes())
+                            .getRequest();
+            Integer userId = (Integer) request.getAttribute("userId");
+            return userId != null ? userId : 1; // 兜底
+        } catch (Exception e) {
+            return 1; // 非Web上下文兜底
+        }
     }
 }

@@ -4,6 +4,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.springbootdemo.dto.UserDTO;
+import org.example.springbootdemo.exception.UnauthorizedException;
 import org.example.springbootdemo.util.JwtUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,14 +20,11 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
-        String uri = request.getRequestURI();
-
-
         // 从请求头获取 Token
         String authorization = request.getHeader("Authorization");
 
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new RuntimeException("未提供有效的认证信息");
+            throw new UnauthorizedException("未提供有效的认证信息");
         }
 
         String token = authorization.substring(7);
@@ -41,8 +39,10 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
             return true; // 放行
 
+        } catch (UnauthorizedException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Token 无效或已过期");
+            throw new UnauthorizedException("Token 无效或已过期", e);
         }
     }
 }

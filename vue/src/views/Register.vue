@@ -54,6 +54,7 @@
               clearable
           />
         </el-form-item>
+
         <el-form-item>
           <el-button
               type="primary"
@@ -94,7 +95,7 @@ const router = useRouter()
 const registerFormRef = ref(null)
 const loading = ref(false)
 
-// 注册表单数据
+// 注册表单数据（仅购买用户自注册，不选角色）
 const registerForm = reactive({
   id: null,
   name: '',
@@ -146,7 +147,7 @@ const handleRegister = async () => {
   try {
     // 准备提交数据
     const submitData = {
-      id: Number(registerForm.id),  // 确保是数字类型
+      id: Number(registerForm.id),
       name: registerForm.name,
       password: registerForm.password,
     }

@@ -16,10 +16,33 @@
         SELECT id, name, status, role_id FROM user WHERE id = #{id}
     </select>
 
+    <select id="getUserDetailById" resultType="org.example.springbootdemo.vo.UserDetailVO">
+        SELECT id, name, status, role_id, creator_id, approver_id, created_at, updated_at, approve_time
+        FROM user
+        WHERE id = #{id}
+    </select>
+
     <insert id="insertUser" parameterType="UserDTO">
-        INSERT INTO user (id, name, password)
-        VALUES (#{id}, #{name}, #{password})
+        INSERT INTO user (id, name, password, status, role_id)
+        VALUES (#{id}, #{name}, #{password}, 1, #{roleId})
     </insert>
+
+    <!-- 人事创建用户：status=2(待审核), 写入creator_id和创建/更新时间 -->
+    <insert id="insertUserWithAudit">
+        INSERT INTO user (id, name, password, status, role_id, creator_id, created_at, updated_at)
+        VALUES (#{id}, #{name}, #{password}, 2, #{roleId}, #{creatorId}, NOW(), NOW())
+    </insert>
+
+    <!-- 监管审核用户：更新status/approver_id/approve_time（必须原状态=2待审核） -->
+    <update id="approveUser">
+        UPDATE user
+        SET status = #{status},
+            approver_id = #{approverId},
+            approve_time = NOW(),
+            updated_at = NOW()
+        WHERE id = #{id}
+          AND status = 2
+    </update>
 
     <delete id="deleteUser" parameterType="int">
         DELETE FROM user WHERE id = #{id}

@@ -4,9 +4,9 @@
     <!-- 日志存放根目录 -->
     <property name="LOG_HOME" value="logs"/>
     
-    <!-- 日志输出格式 -->
+    <!-- 日志输出格式（含 TraceId 链路追踪） -->
     <property name="LOG_PATTERN" 
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - [Category:%X{logCategory}] [BizNo:%X{bizNo}] %msg%n"/>
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [TraceId:%X{traceId}] %logger{50} - [Category:%X{logCategory}] [BizNo:%X{bizNo}] %msg%n"/>
 
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -18,6 +18,21 @@
 
     <!-- ==================== Logger配置 ==================== -->
     
+    <!-- RabbitMQ 日志 Appender - 发送/消费消息追踪 -->
+    <appender name="RABBITMQ" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/rabbitmq/rabbitmq.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/rabbitmq/rabbitmq.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
     <!-- 严重错误日志 Appender - 独立存储需要人工介入的错误 -->
     <appender name="CRITICAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/critical/critical.log</file>
@@ -78,6 +93,15 @@
         <appender-ref ref="CRITICAL"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
+
+    <!-- RabbitMQ 发送/消费日志 → 独立文件 + 控制台 -->
+    <logger name="org.example.springbootdemo.service.imp.RabbitMQDemoProducer" level="INFO" additivity="false">
+        <appender-ref ref="RABBITMQ"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- 屏蔽 RabbitMQ 监听器容器的启停日志（DevTools 重启时会刷屏） -->
+    <logger name="org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer" level="WARN"/>
 
     <!-- 根日志级别 -->
     <root level="INFO">

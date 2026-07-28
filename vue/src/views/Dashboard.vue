@@ -47,16 +47,16 @@
             :router="true"
             style="border: none;"
             :collapse-transition="false">
-          <el-sub-menu index="1">
+          <el-sub-menu index="1" v-if="isStaffManager">
             <template #title>
               <el-icon><Setting /></el-icon>
               <span>系统管理</span>
             </template>
-            <el-menu-item index="/dashboard/user">
+            <el-menu-item index="/dashboard/staff">
               <el-icon><User /></el-icon>
-              <span>用户管理</span>
+              <span>员工管理</span>
             </el-menu-item>
-            <el-menu-item index="/dashboard/dept">
+            <el-menu-item index="/dashboard/dept" v-if="isAdmin">
               <el-icon><OfficeBuilding /></el-icon>
               <span>部门管理</span>
             </el-menu-item>
@@ -75,9 +75,13 @@
               <el-icon><Box /></el-icon>
               <span>库存管理</span>
             </el-menu-item>
+            <el-menu-item index="/dashboard/replenish" v-if="canReviewReplenish">
+              <el-icon><Checked /></el-icon>
+              <span>补货单审核</span>
+            </el-menu-item>
           </el-sub-menu>
           
-          <el-sub-menu index="3">
+          <el-sub-menu index="3" v-if="isAdmin">
             <template #title>
               <el-icon><Tools /></el-icon>
               <span>开发工具</span>
@@ -104,10 +108,11 @@ import { useRoute } from 'vue-router';
 import { ElMessage } from "element-plus";
 import router from "@/router/index.js";
 import authService from "@/service/AuthService.js";
+import { Role } from '@/enum/user/Role.js'
 import {
   Fold,
   Expand,
-  Operation,  // 添加这个
+  Operation,
   Setting,
   User,
   OfficeBuilding,
@@ -115,6 +120,7 @@ import {
   SwitchButton,
   Document,
   Box,
+  Checked,
   Tools
 } from '@element-plus/icons-vue';
 
@@ -133,6 +139,11 @@ const userName = computed(() => {
   const userData = user.value
   return userData ? (userData.username || userData.name || '管理员') : '管理员'
 })
+
+// 角色判断
+const isAdmin = computed(() => authService.isAdmin())
+const isStaffManager = computed(() => authService.isHR() || authService.isSupervisor())
+const canReviewReplenish = computed(() => authService.hasRole([Role.REPLENISHER, Role.SUPERVISOR, Role.SYSTEM_ADMIN]))
 
 // 组件挂载时检查登录状态
 onMounted(() => {
@@ -337,7 +348,7 @@ const handleCommand = (command) => {
 
 .main-content {
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-  padding: 20px;
+  padding: 0;
   overflow-y: auto;
 }
 

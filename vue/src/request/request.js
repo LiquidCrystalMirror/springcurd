@@ -11,7 +11,7 @@ instance.defaults.headers.post['Content-Type'] = 'application/json';
 // ... existing code ...
 
 // 定义不需要 token 验证的白名单路径
-const whiteList = ['/login', '/register']
+const whiteList = ['/auth/login', '/auth/register']
 
 // 添加请求拦截器，在发送请求前检查 token 有效性
 instance.interceptors.request.use(function (config) {

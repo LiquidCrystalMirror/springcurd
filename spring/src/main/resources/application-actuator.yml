@@ -1,0 +1,25 @@
+# ==================== Spring Boot Actuator 配置 ====================
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露端点（生产环境按需限制）
+        include: health,info,metrics,prometheus,circuitbreakers,circuitbreakerevents,retries,retryevents,ratelimiters
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always       # 显示详细健康信息（含各组件状态）
+      show-components: always
+      probes:
+        enabled: true            # K8s liveness/readiness 探针
+  health:
+    redis:
+      enabled: true
+    rabbit:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name:spring-boot-demo}

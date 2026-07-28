@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.springbootdemo.mapper.ReplenishOrderMapper">
+
+    <!-- ==================== 基础列映射 ==================== -->
+    <sql id="baseColumns">
+        o.id, o.creator_id, o.approver_id, o.status, o.remark,
+        o.create_time, o.approve_time, o.update_time
+    </sql>
+
+    <!-- ==================== 联表 VO 结果映射 ==================== -->
+    <resultMap id="ReplenishOrderVOMap" type="org.example.springbootdemo.vo.ReplenishOrderVO">
+        <id column="id" property="id"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="creator_name" property="creatorName"/>
+        <result column="approver_id" property="approverId"/>
+        <result column="approver_name" property="approverName"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="item_count" property="itemCount"/>
+        <result column="total_quantity" property="totalQuantity"/>
+    </resultMap>
+
+    <!-- ==================== 原有方法 ==================== -->
+
+    <!-- 按状态查询补货单列表 -->
+    <select id="selectByStatus" resultType="org.example.springbootdemo.entity.ReplenishOrder">
+        SELECT id, creator_id, approver_id, status, remark, create_time, approve_time, update_time
+        FROM stock_replenish_order
+        WHERE status = #{status}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 审核补货单（必须原状态为 0 待审核才能更新，防止并发重复审核） -->
+    <update id="approve">
+        UPDATE stock_replenish_order
+        SET status = #{status},
+            approver_id = #{approverId},
+            remark = #{remark},
+            approve_time = NOW(),
+            update_time = NOW()
+        WHERE id = #{id}
+          AND status = 0
+    </update>
+
+    <!-- 标记为已执行（必须原状态为 1 审核通过） -->
+    <update id="markExecuted">
+        UPDATE stock_replenish_order
+        SET status = 3,
+            update_time = NOW()
+        WHERE id = #{id}
+          AND status = 1
+    </update>
+
+    <!-- ==================== 联表查询 ==================== -->
+
+    <!--
+        联表分页查询补货单列表
+        关联 stock_replenish_log 聚合商品种类数和总数量
+        关联 staff 获取创建人/审核人姓名
+        说明：stock_replenish_log.id（批次ID）的联表查询利用其复合主键 (id, product_id)
+              的最左前缀索引，无需额外建索引即可高效 JOIN
+    -->
+    <select id="selectPageWithDetail" resultMap="ReplenishOrderVOMap">
+        SELECT
+            o.id,
+            o.creator_id,
+            sc.name AS creator_name,
+            o.approver_id,
+            sa.name AS approver_name,
+            o.status,
+            o.remark,
+            o.create_time,
+            o.approve_time,
+            COUNT(l.product_id) AS item_count,
+            COALESCE(SUM(l.quantity), 0) AS total_quantity
+        FROM stock_replenish_order o
+        LEFT JOIN stock_replenish_log l ON l.id = o.id
+        LEFT JOIN staff sc ON sc.id = o.creator_id
+        LEFT JOIN staff sa ON sa.id = o.approver_id
+        <where>
+            <if test="status != null">
+                o.status = #{status}
+            </if>
+        </where>
+        GROUP BY o.id, o.creator_id, sc.name, o.approver_id, sa.name,
+                 o.status, o.remark, o.create_time, o.approve_time
+        ORDER BY o.create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 联表查询总数 -->
+    <select id="countWithDetail" resultType="long">
+        SELECT COUNT(*)
+        FROM stock_replenish_order o
+        <where>
+            <if test="status != null">
+                o.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据ID联表查询补货单详情 -->
+    <select id="selectByIdWithDetail" resultMap="ReplenishOrderVOMap">
+        SELECT
+            o.id,
+            o.creator_id,
+            sc.name AS creator_name,
+            o.approver_id,
+            sa.name AS approver_name,
+            o.status,
+            o.remark,
+            o.create_time,
+            o.approve_time,
+            COUNT(l.product_id) AS item_count,
+            COALESCE(SUM(l.quantity), 0) AS total_quantity
+        FROM stock_replenish_order o
+        LEFT JOIN stock_replenish_log l ON l.id = o.id
+        LEFT JOIN staff sc ON sc.id = o.creator_id
+        LEFT JOIN staff sa ON sa.id = o.approver_id
+        WHERE o.id = #{id}
+        GROUP BY o.id, o.creator_id, sc.name, o.approver_id, sa.name,
+                 o.status, o.remark, o.create_time, o.approve_time
+    </select>
+
+</mapper>

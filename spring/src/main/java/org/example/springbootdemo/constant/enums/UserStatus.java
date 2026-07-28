@@ -4,15 +4,17 @@ package org.example.springbootdemo.constant.enums;
  * 用户状态枚举
  */
 public enum UserStatus {
-    /**
-     * 禁用
-     */
+    /** 禁用 */
     DISABLED((byte) 0, "禁用"),
-    
-    /**
-     * 启用
-     */
-    ENABLED((byte) 1, "启用");
+
+    /** 启用（审核通过） */
+    ENABLED((byte) 1, "启用"),
+
+    /** 待审核（人事创建后的初始状态） */
+    PENDING_APPROVAL((byte) 2, "待审核"),
+
+    /** 审核拒绝 */
+    APPROVAL_REJECTED((byte) 3, "审核拒绝");
 
     private final byte code;
     private final String description;

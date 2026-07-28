@@ -1,9 +1,14 @@
 server:
-  port: 8080
+  port: 8081
   address: 0.0.0.0
 
 
 
 spring:
   config:
-    import: classpath:application-mapper.yml,application-springdoc.yml,application-data.yml,application-redis.yml
+    import: classpath:application-mapper.yml,classpath:application-springdoc.yml,classpath:application-data.yml,classpath:application-redis.yml,classpath:application-rabbitmq.yml,classpath:application-resilience4j.yml,classpath:application-actuator.yml
+
+logging:
+  level:
+    org.springframework.amqp: INFO
+    com.rabbitmq.client: INFO
